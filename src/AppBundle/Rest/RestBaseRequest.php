@@ -5,11 +5,13 @@
 
 namespace AppBundle\Rest;
 
+use AppBundle\Exception\RestException;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
+
 
 interface RestRequestValidateInterface
 {
-    public function validateRequest();
+    public function handleRequest($method);
 }
 
 abstract class RestBaseRequest implements RestRequestValidateInterface
@@ -17,7 +19,7 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
     protected $agencyId = NULL;
     protected $signature = NULL;
     protected $requestBody = NULL;
-    protected $lastMessage = '';
+    protected $requiredFields = array();
     protected $em = NULL;
 
     public function __construct(MongoEM $em)
@@ -28,46 +30,63 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
     public function setRequestBody($requestBody)
     {
         $this->requestBody = json_decode($requestBody, TRUE);
-        $this->agencyId = !empty($this->requestBody['credentials']['agencyId']) ? $this->requestBody['credentials']['agencyId'] : NULL;
-        $this->signature = !empty($this->requestBody['credentials']['key']) ? $this->requestBody['credentials']['key'] : NULL;
+        $this->validateRequest();
     }
 
-    public function validateRequest()
+    private function validateRequest()
     {
-        $status = TRUE;
+        $exceptionMessage = '';
 
         if (!$this->requestBody)
         {
-            $this->lastMessage = 'Failed parsing request body.';
-            $status = FALSE;
+            $exceptionMessage = 'Failed parsing request body.';
         }
-        elseif (empty($this->requestBody['credentials']))
+        elseif (!$this->isRequestValid())
         {
-            $this->lastMessage = 'Failed validating request. Check your credentials.';
-            $status = FALSE;
+            $exceptionMessage = 'Failed validating request. Check your credentials (agency & key).';
         }
-        elseif (!$this->validateAgency())
+        elseif (empty($this->requestBody['body']))
         {
-            $this->lastMessage = 'Failed validating request. Check your agency.';
-            $status = FALSE;
-        }
-        elseif (!$this->validateSignature())
-        {
-            $this->lastMessage = 'Failed validating request. Check your key.';
-            $status = FALSE;
+            $exceptionMessage = 'Empty request.';
         }
 
-        return $status;
+        if (!empty($exceptionMessage)) {
+            throw new RestException($exceptionMessage);
+        }
+
+        $this->agencyId = $this->requestBody['credentials']['agencyId'];
+        $this->signature = $this->requestBody['credentials']['key'];
     }
 
-    private function validateAgency()
+    private function isRequestValid()
     {
-        $agencyIsValid = $this->isAgencyValid($this->agencyId);
+        $isValid = TRUE;
 
-        return $agencyIsValid;
+        $requiredFields = array(
+            'agencyId',
+            'key',
+        );
+
+        foreach ($requiredFields as $field)
+        {
+            if (empty($this->requestBody['credentials'][$field]))
+            {
+                $isValid = FALSE;
+            }
+            elseif ($field == 'agencyId' && !$this->isAgencyValid($this->requestBody['credentials'][$field]))
+            {
+                $isValid = FALSE;
+            }
+            elseif ($field == 'key' && !$this->isSignatureValid($this->requestBody['credentials']['agencyId'], $this->requestBody['credentials']['key']))
+            {
+                $isValid = FALSE;
+            }
+        }
+
+        return $isValid;
     }
 
-    private function isAgencyValid($agencyId)
+    public function isAgencyValid($agencyId)
     {
         $agency = $this->getAgencyById($agencyId);
 
@@ -83,14 +102,7 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
         return $agency;
     }
 
-    private function validateSignature()
-    {
-        $keyIsValid = $this->isSignatureValid($this->agencyId, $this->signature);
-
-        return $keyIsValid;
-    }
-
-    private function isSignatureValid($agencyId, $signature)
+    public function isSignatureValid($agencyId, $signature)
     {
         $agency = $this->getAgencyById($agencyId);
 
@@ -104,11 +116,6 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
         }
 
         return FALSE;
-    }
-
-    public function getLastMessage()
-    {
-        return $this->lastMessage;
     }
 
     public function getParsedBody()
