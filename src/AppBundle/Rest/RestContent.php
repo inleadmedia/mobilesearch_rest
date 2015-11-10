@@ -5,15 +5,10 @@
 
 namespace AppBundle\Rest;
 
-use AppBundle\Rest\RestRequest;
+use AppBundle\Rest\RestBaseRequest;
 
-class RestContent extends RestRequest
+class RestContent extends RestBaseRequest
 {
-    public function __construct($requestBody)
-    {
-        parent::__construct($requestBody);
-    }
-
     /**
      *
      * {@inheritDoc}

@@ -24,10 +24,13 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
         $this->rawContent = $request->getContent();
 
-        $restContent = new RestContent($this->rawContent);
+        $em = $this->get('doctrine_mongodb');
+        $restContent = new RestContent($em);
+        $restContent->setRequestBody($this->rawContent);
         $isValid = $restContent->validateRequest();
 
         $response = $this->setResponse($isValid, $restContent->getLastMessage(), $this->lastMethod, $restContent->getParsedBody());
+
         return $response;
     }
 
@@ -41,7 +44,12 @@ final class RestController extends Controller
         );
 
         $response = new Response(json_encode($responseContent));
-        $response->headers->set('Content-Type', 'application/json');
+
+        // @todo
+        // Typo.
+        if ($method != 'GET') {
+            $response->headers->set('Content-Type', 'application/json');
+        }
 
         return $response;
     }
