@@ -38,18 +38,18 @@ class RestContent extends RestBaseRequest
         }
     }
 
-    public function exists($nid, $agencyId)
+    public function exists($id, $agency)
     {
-        $agency = $this->get($nid, $agencyId);
+        $entity = $this->get($id, $agency);
 
-        return !is_null($agency);
+        return !is_null($entity);
     }
 
-    public function get($nid, $agencyId)
+    public function get($id, $agency)
     {
         $criteria = array(
-            'nid' => $nid,
-            'agency' => $agencyId,
+            'nid' => $id,
+            'agency' => $agency,
         );
 
         $content = $this->em
@@ -115,9 +115,9 @@ class RestContent extends RestBaseRequest
         return $contentObject;
     }
 
-    private function update($nid, $agencyId)
+    private function update($id, $agency)
     {
-        $contentObject = $this->get($nid, $agencyId);
+        $contentObject = $this->get($id, $agency);
         $updatedObject = $this->prepare($contentObject);
 
         $dm = $this->em->getManager();
@@ -126,9 +126,9 @@ class RestContent extends RestBaseRequest
         return $updatedObject;
     }
 
-    private function delete($nid, $agencyId)
+    private function delete($id, $agency)
     {
-        $contentObject = $this->get($nid, $agencyId);
+        $contentObject = $this->get($id, $agency);
 
         $dm = $this->em->getManager();
         $dm->remove($contentObject);
