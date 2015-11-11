@@ -19,7 +19,6 @@ class RestContent extends RestBaseRequest
 
         $this->requiredFields = array(
             'nid',
-            'key',
             'agency',
         );
     }
@@ -103,9 +102,6 @@ class RestContent extends RestBaseRequest
 
         $nid = !empty($body['nid']) ? $body['nid'] : 0;
         $content->setNid($nid);
-
-        $key = !empty($body['key']) ? $body['key'] : '';
-        $content->setKey($key);
 
         $agency = !empty($body['agency']) ? $body['agency'] : '000000';
         $content->setAgency($agency);

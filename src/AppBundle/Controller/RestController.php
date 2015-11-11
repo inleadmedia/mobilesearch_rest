@@ -23,7 +23,7 @@ final class RestController extends Controller
     public function __construct()
     {
         $this->lastMessage = '';
-        $this->lastStatus = TRUE;
+        $this->lastStatus = FALSE;
     }
 
     /**
@@ -43,11 +43,15 @@ final class RestController extends Controller
             $restContent->setRequestBody($this->rawContent);
             $result = $restContent->handleRequest($this->lastMethod);
             $this->lastMessage = $result;
+            $this->lastStatus = TRUE;
         }
         catch (RestException $exc)
         {
-            $this->lastMessage = $exc->getMessage();
-            $this->lastStatus = FALSE;
+            $this->lastMessage = 'Request fault: ' . $exc->getMessage();
+        }
+        catch (\Exception $exc)
+        {
+            $this->lastMessage = 'Generic fault: ' . $exc->getMessage();
         }
 
         $response = $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastMethod, $restContent->getParsedBody());

@@ -25,11 +25,6 @@ class Content
     /**
      * @MongoDB\string
      */
-    protected $key;
-
-    /**
-     * @MongoDB\string
-     */
     protected $agency;
 
     /**
@@ -192,27 +187,5 @@ class Content
     public function getAgency()
     {
         return $this->agency;
-    }
-
-    /**
-     * Set key
-     *
-     * @param string $key
-     * @return self
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-        return $this;
-    }
-
-    /**
-     * Get key
-     *
-     * @return string $key
-     */
-    public function getKey()
-    {
-        return $this->key;
     }
 }
