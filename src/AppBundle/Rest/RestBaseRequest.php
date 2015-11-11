@@ -8,19 +8,14 @@ namespace AppBundle\Rest;
 use AppBundle\Exception\RestException;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 
-
-interface RestRequestValidateInterface
-{
-    public function handleRequest($method);
-}
-
-abstract class RestBaseRequest implements RestRequestValidateInterface
+abstract class RestBaseRequest
 {
     protected $agencyId = NULL;
     protected $signature = NULL;
     protected $requestBody = NULL;
     protected $requiredFields = array();
     protected $em = NULL;
+    private $primaryIdentifier = '';
 
     public function __construct(MongoEM $em)
     {
@@ -39,23 +34,23 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
 
         if (!$this->requestBody)
         {
-            $exceptionMessage = 'Failed parsing request body.';
+            $exceptionMessage = 'Failed parsing request.';
         }
         elseif (!$this->isRequestValid())
         {
             $exceptionMessage = 'Failed validating request. Check your credentials (agency & key).';
         }
-        elseif (empty($this->requestBody['body']))
+        elseif (empty($this->getParsedBody()))
         {
-            $exceptionMessage = 'Empty request.';
+            $exceptionMessage = 'Empty request body.';
         }
 
         if (!empty($exceptionMessage)) {
             throw new RestException($exceptionMessage);
         }
 
-        $this->agencyId = $this->requestBody['credentials']['agencyId'];
-        $this->signature = $this->requestBody['credentials']['key'];
+        $this->agencyId = $this->getParsedCredentials()['agencyId'];
+        $this->signature = $this->getParsedCredentials()['key'];
     }
 
     private function isRequestValid()
@@ -67,17 +62,19 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
             'key',
         );
 
+        $requestCredentials = $this->getParsedCredentials();
+
         foreach ($requiredFields as $field)
         {
-            if (empty($this->requestBody['credentials'][$field]))
+            if (empty($requestCredentials[$field]))
             {
                 $isValid = FALSE;
             }
-            elseif ($field == 'agencyId' && !$this->isAgencyValid($this->requestBody['credentials'][$field]))
+            elseif ($field == 'agencyId' && !$this->isAgencyValid($requestCredentials[$field]))
             {
                 $isValid = FALSE;
             }
-            elseif ($field == 'key' && !$this->isSignatureValid($this->requestBody['credentials']['agencyId'], $this->requestBody['credentials']['key']))
+            elseif ($field == 'key' && !$this->isSignatureValid($requestCredentials['agencyId'], $requestCredentials['key']))
             {
                 $isValid = FALSE;
             }
@@ -120,6 +117,11 @@ abstract class RestBaseRequest implements RestRequestValidateInterface
 
     public function getParsedBody()
     {
-        return $this->requestBody;
+        return $this->requestBody['body'];
+    }
+
+    public function getParsedCredentials()
+    {
+        return $this->requestBody['credentials'];
     }
 }

@@ -17,25 +17,43 @@ class RestContent extends RestBaseRequest
     {
         parent::__construct($em);
 
+        $this->primaryIdentifier = 'nid';
         $this->requiredFields = array(
-            'nid',
+            $this->primaryIdentifier,
             'agency',
         );
     }
 
     protected function validate()
     {
+        $body = $this->getParsedBody();
         foreach ($this->requiredFields as $field)
         {
-            if (empty($this->requestBody['body'][$field]))
+            if (empty($body[$field]))
             {
                 throw new RestException('Required field "' . $field . '" has no value.');
             }
-            elseif ($field == 'agency' && !$this->isAgencyValid($this->requestBody['body'][$field]))
+            elseif ($field == 'agency' && !$this->isChildAgencyValid($body[$field]))
             {
-                throw new RestException("Tried to assign content to agency {$this->requestBody['body'][$field]} which does not exist.");
+                throw new RestException("Tried to modify content using agency {$body[$field]} which does not exist.");
             }
         }
+    }
+
+    public function isChildAgencyValid($childAgency)
+    {
+        $agencyEntity = $this->getAgencyById($this->agencyId);
+
+        if ($agencyEntity)
+        {
+            $children = $agencyEntity->getChildren();
+            if (in_array($childAgency, $children) || $childAgency == $this->agencyId)
+            {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 
     public function exists($id, $agency)
@@ -48,7 +66,7 @@ class RestContent extends RestBaseRequest
     public function get($id, $agency)
     {
         $criteria = array(
-            'nid' => $id,
+            $this->primaryIdentifier => $id,
             'agency' => $agency,
         );
 
@@ -63,16 +81,17 @@ class RestContent extends RestBaseRequest
     {
         $this->validate();
         $requestResult = '';
+        $requestBody = $this->getParsedBody();
 
-        $nid = $this->requestBody['body']['nid'];
-        $agency = $this->requestBody['body']['agency'];
+        $nid = $requestBody[$this->primaryIdentifier];
+        $agency = $requestBody['agency'];
 
         switch ($method)
         {
             case 'POST':
                 if (!$this->exists($nid, $agency))
                 {
-                    throw new RestException("Content with nid {$nid}, agency {$agency} does not exist.");
+                    throw new RestException("Content with id {$nid}, agency {$agency} does not exist.");
                 }
                 else {
                     $updatedContent = $this->update($nid, $agency);
@@ -82,7 +101,7 @@ class RestContent extends RestBaseRequest
             case 'PUT':
                 if ($this->exists($nid, $agency))
                 {
-                    throw new RestException("Content with nid {$nid}, agency {$agency} already exists.");
+                    throw new RestException("Content with id {$nid}, agency {$agency} already exists.");
                 }
                 else {
                     $insertedContent = $this->insert();
@@ -92,7 +111,7 @@ class RestContent extends RestBaseRequest
             case 'DELETE':
                 if (!$this->exists($nid, $agency))
                 {
-                    throw new RestException("Content with nid {$nid}, agency {$agency} does not exist.");
+                    throw new RestException("Content with id {$nid}, agency {$agency} does not exist.");
                 }
                 else {
                     $deletedContent = $this->delete($nid, $agency);
@@ -117,13 +136,13 @@ class RestContent extends RestBaseRequest
 
     private function update($id, $agency)
     {
-        $contentObject = $this->get($id, $agency);
-        $updatedObject = $this->prepare($contentObject);
+        $contentEntity = $this->get($id, $agency);
+        $updatedEntity = $this->prepare($contentEntity);
 
         $dm = $this->em->getManager();
         $dm->flush();
 
-        return $updatedObject;
+        return $updatedEntity;
     }
 
     private function delete($id, $agency)
@@ -139,9 +158,9 @@ class RestContent extends RestBaseRequest
 
     public function prepare(FSContent $content)
     {
-        $body = $this->requestBody['body'];
+        $body = $this->getParsedBody();
 
-        $nid = !empty($body['nid']) ? $body['nid'] : 0;
+        $nid = !empty($body[$this->primaryIdentifier]) ? $body[$this->primaryIdentifier] : 0;
         $content->setNid($nid);
 
         $agency = !empty($body['agency']) ? $body['agency'] : '000000';

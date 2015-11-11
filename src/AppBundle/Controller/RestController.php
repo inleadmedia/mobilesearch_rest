@@ -59,22 +59,15 @@ final class RestController extends Controller
         return $response;
     }
 
-    public function setResponse($status = TRUE, $message = '', $method = 'GET', $content = '')
+    public function setResponse($status = TRUE, $message = '')
     {
         $responseContent = array(
             'status' => $status,
             'message' => $message,
-            'method' => $method,
-            'content' => $content,
         );
 
         $response = new Response(json_encode($responseContent));
-
-        // @todo
-        // Typo.
-        if ($method != 'GET') {
-            $response->headers->set('Content-Type', 'application/json');
-        }
+        $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
