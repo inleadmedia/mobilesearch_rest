@@ -28,6 +28,16 @@ class Agency
     protected $key;
 
     /**
+     * @MongoDB\string
+     */
+    protected $name;
+
+    /**
+     * @MongoDB\collection
+     */
+    protected $children;
+
+    /**
      * Get id
      *
      * @return id $id
@@ -79,5 +89,49 @@ class Agency
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string $name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set children
+     *
+     * @param collection $children
+     * @return self
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
+        return $this;
+    }
+
+    /**
+     * Get children
+     *
+     * @return collection $children
+     */
+    public function getChildren()
+    {
+        return $this->children;
     }
 }
