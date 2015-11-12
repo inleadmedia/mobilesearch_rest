@@ -9,7 +9,6 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 
 use AppBundle\Rest\RestBaseRequest;
 use AppBundle\Document\Content as FSContent;
-use AppBundle\Exception\RestException;
 
 class RestContentRequest extends RestBaseRequest
 {
@@ -47,19 +46,19 @@ class RestContentRequest extends RestBaseRequest
 
     protected function insert()
     {
-        $contentObject = $this->prepare(new FSContent());
+        $entity = $this->prepare(new FSContent());
 
         $dm = $this->em->getManager();
-        $dm->persist($contentObject);
+        $dm->persist($entity);
         $dm->flush();
 
-        return $contentObject;
+        return $entity;
     }
 
     protected function update($id, $agency)
     {
-        $contentEntity = $this->get($id, $agency);
-        $updatedEntity = $this->prepare($contentEntity);
+        $loadedEntity = $this->get($id, $agency);
+        $updatedEntity = $this->prepare($loadedEntity);
 
         $dm = $this->em->getManager();
         $dm->flush();
@@ -69,13 +68,13 @@ class RestContentRequest extends RestBaseRequest
 
     protected function delete($id, $agency)
     {
-        $contentObject = $this->get($id, $agency);
+        $entity = $this->get($id, $agency);
 
         $dm = $this->em->getManager();
-        $dm->remove($contentObject);
+        $dm->remove($entity);
         $dm->flush();
 
-        return $contentObject;
+        return $entity;
     }
 
     public function prepare(FSContent $content)
