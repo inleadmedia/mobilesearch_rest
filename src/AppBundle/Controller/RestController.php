@@ -11,8 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Exception\RestException;
-use AppBundle\Rest\RestContentRequest;
 use AppBundle\Rest\RestBaseRequest;
+use AppBundle\Rest\RestContentRequest;
+use AppBundle\Rest\RestMenuRequest;
 
 final class RestController extends Controller
 {
@@ -41,7 +42,21 @@ final class RestController extends Controller
         return $this->relay($rcr);
     }
 
-    public function relay(RestBaseRequest $rbr)
+    /**
+     * @Route("/menu")
+     */
+    public function menuAction(Request $request)
+    {
+        $this->lastMethod = $request->getMethod();
+        $this->rawContent = $request->getContent();
+
+        $em = $this->get('doctrine_mongodb');
+        $rcr = new RestMenuRequest($em);
+
+        return $this->relay($rcr);
+    }
+
+    private function relay(RestBaseRequest $rbr)
     {
         try
         {
@@ -64,7 +79,7 @@ final class RestController extends Controller
         return $response;
     }
 
-    public function setResponse($status = TRUE, $message = '')
+    private function setResponse($status = TRUE, $message = '')
     {
         $responseContent = array(
             'status' => $status,
