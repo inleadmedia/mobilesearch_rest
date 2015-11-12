@@ -8,18 +8,19 @@ namespace AppBundle\Rest;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 
 use AppBundle\Rest\RestBaseRequest;
-use AppBundle\Document\Menu as FSMenu;
+use AppBundle\Document\Lists as FSList;
 
-class RestMenuRequest extends RestBaseRequest
+class RestListsRequest extends RestBaseRequest
 {
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);
 
-        $this->primaryIdentifier = 'mlid';
+        $this->primaryIdentifier = 'key';
         $this->requiredFields = array(
             $this->primaryIdentifier,
             'agency',
+            'nid',
         );
     }
 
@@ -38,7 +39,7 @@ class RestMenuRequest extends RestBaseRequest
         );
 
         $entity = $this->em
-            ->getRepository('AppBundle:Menu')
+            ->getRepository('AppBundle:Lists')
             ->findOneBy($criteria);
 
         return $entity;
@@ -46,7 +47,7 @@ class RestMenuRequest extends RestBaseRequest
 
     protected function insert()
     {
-        $entity = $this->prepare(new FSMenu());
+        $entity = $this->prepare(new FSList());
 
         $dm = $this->em->getManager();
         $dm->persist($entity);
@@ -77,28 +78,31 @@ class RestMenuRequest extends RestBaseRequest
         return $entity;
     }
 
-    public function prepare(FSMenu $menu)
+    public function prepare(FSList $list)
     {
         $body = $this->getParsedBody();
 
-        $mlid = !empty($body[$this->primaryIdentifier]) ? $body[$this->primaryIdentifier] : 0;
-        $menu->setMlid($mlid);
+        $key = !empty($body[$this->primaryIdentifier]) ? $body[$this->primaryIdentifier] : 0;
+        $list->setKey($key);
+
+        $nid = !empty($body['nid']) ? $body['nid'] : '0';
+        $list->setAgency($nid);
 
         $agency = !empty($body['agency']) ? $body['agency'] : '000000';
-        $menu->setAgency($agency);
-
-        $type = !empty($body['type']) ? $body['type'] : 'undefined';
-        $menu->setType($type);
+        $list->setAgency($agency);
 
         $name = !empty($body['name']) ? $body['name'] : 'Undefined';
-        $menu->setName($name);
+        $list->setName($name);
 
-        $url = !empty($body['url']) ? $body['url'] : '';
-        $menu->setUrl($url);
+        $nids = !empty($body['nids']) ? $body['nids'] : array();
+        $list->setNids($nids);
 
-        $order = !empty($body['order']) ? $body['order'] : 0;
-        $menu->setOrder($order);
+        $type = !empty($body['type']) ? $body['type'] : array();
+        $list->setType($type);
 
-        return $menu;
+        $promoted = !empty($body['promoted']) ? $body['promoted'] : array();
+        $list->setPromoted($promoted);
+
+        return $list;
     }
 }
