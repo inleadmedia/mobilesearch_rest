@@ -24,38 +24,6 @@ class RestContentRequest extends RestBaseRequest
         );
     }
 
-    protected function validate()
-    {
-        $body = $this->getParsedBody();
-        foreach ($this->requiredFields as $field)
-        {
-            if (empty($body[$field]))
-            {
-                throw new RestException('Required field "' . $field . '" has no value.');
-            }
-            elseif ($field == 'agency' && !$this->isChildAgencyValid($body[$field]))
-            {
-                throw new RestException("Tried to modify content using agency {$body[$field]} which does not exist.");
-            }
-        }
-    }
-
-    public function isChildAgencyValid($childAgency)
-    {
-        $agencyEntity = $this->getAgencyById($this->agencyId);
-
-        if ($agencyEntity)
-        {
-            $children = $agencyEntity->getChildren();
-            if (in_array($childAgency, $children) || $childAgency == $this->agencyId)
-            {
-                return TRUE;
-            }
-        }
-
-        return FALSE;
-    }
-
     protected function exists($id, $agency)
     {
         $entity = $this->get($id, $agency);

@@ -74,6 +74,38 @@ abstract class RestBaseRequest
         return $requestResult;
     }
 
+    protected function validate()
+    {
+        $body = $this->getParsedBody();
+        foreach ($this->requiredFields as $field)
+        {
+            if (empty($body[$field]))
+            {
+                throw new RestException('Required field "' . $field . '" has no value.');
+            }
+            elseif ($field == 'agency' && !$this->isChildAgencyValid($body[$field]))
+            {
+                throw new RestException("Tried to modify entity using agency {$body[$field]} which does not exist.");
+            }
+        }
+    }
+
+    public function isChildAgencyValid($childAgency)
+    {
+        $agencyEntity = $this->getAgencyById($this->agencyId);
+
+        if ($agencyEntity)
+        {
+            $children = $agencyEntity->getChildren();
+            if (in_array($childAgency, $children) || $childAgency == $this->agencyId)
+            {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
     public function setRequestBody($requestBody)
     {
         $this->requestBody = json_decode($requestBody, TRUE);
