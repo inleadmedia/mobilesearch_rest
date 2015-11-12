@@ -11,7 +11,7 @@ use AppBundle\Rest\RestBaseRequest;
 use AppBundle\Document\Content as FSContent;
 use AppBundle\Exception\RestException;
 
-class RestContent extends RestBaseRequest
+class RestContentRequest extends RestBaseRequest
 {
     public function __construct(MongoEM $em)
     {
@@ -56,14 +56,14 @@ class RestContent extends RestBaseRequest
         return FALSE;
     }
 
-    public function exists($id, $agency)
+    protected function exists($id, $agency)
     {
         $entity = $this->get($id, $agency);
 
         return !is_null($entity);
     }
 
-    public function get($id, $agency)
+    protected function get($id, $agency)
     {
         $criteria = array(
             $this->primaryIdentifier => $id,
@@ -77,53 +77,7 @@ class RestContent extends RestBaseRequest
         return $content;
     }
 
-    public function handleRequest($method)
-    {
-        $this->validate();
-        $requestResult = '';
-        $requestBody = $this->getParsedBody();
-
-        $nid = $requestBody[$this->primaryIdentifier];
-        $agency = $requestBody['agency'];
-
-        switch ($method)
-        {
-            case 'POST':
-                if (!$this->exists($nid, $agency))
-                {
-                    throw new RestException("Content with id {$nid}, agency {$agency} does not exist.");
-                }
-                else {
-                    $updatedContent = $this->update($nid, $agency);
-                    $requestResult = 'Updated content with id: ' . $updatedContent->getId();
-                }
-                break;
-            case 'PUT':
-                if ($this->exists($nid, $agency))
-                {
-                    throw new RestException("Content with id {$nid}, agency {$agency} already exists.");
-                }
-                else {
-                    $insertedContent = $this->insert();
-                    $requestResult = 'Created content with id: ' . $insertedContent->getId();
-                }
-                break;
-            case 'DELETE':
-                if (!$this->exists($nid, $agency))
-                {
-                    throw new RestException("Content with id {$nid}, agency {$agency} does not exist.");
-                }
-                else {
-                    $deletedContent = $this->delete($nid, $agency);
-                    $requestResult = 'Deleted content with id: ' . $deletedContent->getId();
-                }
-                break;
-        }
-
-        return $requestResult;
-    }
-
-    private function insert()
+    protected function insert()
     {
         $contentObject = $this->prepare(new FSContent());
 
@@ -134,7 +88,7 @@ class RestContent extends RestBaseRequest
         return $contentObject;
     }
 
-    private function update($id, $agency)
+    protected function update($id, $agency)
     {
         $contentEntity = $this->get($id, $agency);
         $updatedEntity = $this->prepare($contentEntity);
@@ -145,7 +99,7 @@ class RestContent extends RestBaseRequest
         return $updatedEntity;
     }
 
-    private function delete($id, $agency)
+    protected function delete($id, $agency)
     {
         $contentObject = $this->get($id, $agency);
 

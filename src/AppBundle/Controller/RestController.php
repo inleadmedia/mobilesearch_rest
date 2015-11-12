@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Exception\RestException;
-use AppBundle\Rest\RestContent;
+use AppBundle\Rest\RestContentRequest;
+use AppBundle\Rest\RestBaseRequest;
 
 final class RestController extends Controller
 {
@@ -35,13 +36,17 @@ final class RestController extends Controller
         $this->rawContent = $request->getContent();
 
         $em = $this->get('doctrine_mongodb');
+        $rcr = new RestContentRequest($em);
 
-        $restContent = new RestContent($em);
+        return $this->relay($rcr);
+    }
 
+    public function relay(RestBaseRequest $rbr)
+    {
         try
         {
-            $restContent->setRequestBody($this->rawContent);
-            $result = $restContent->handleRequest($this->lastMethod);
+            $rbr->setRequestBody($this->rawContent);
+            $result = $rbr->handleRequest($this->lastMethod);
             $this->lastMessage = $result;
             $this->lastStatus = TRUE;
         }
@@ -54,7 +59,7 @@ final class RestController extends Controller
             $this->lastMessage = 'Generic fault: ' . $exc->getMessage();
         }
 
-        $response = $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastMethod, $restContent->getParsedBody());
+        $response = $this->setResponse($this->lastStatus, $this->lastMessage);
 
         return $response;
     }

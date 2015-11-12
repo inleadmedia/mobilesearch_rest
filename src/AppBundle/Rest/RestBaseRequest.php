@@ -15,11 +15,63 @@ abstract class RestBaseRequest
     protected $requestBody = NULL;
     protected $requiredFields = array();
     protected $em = NULL;
-    private $primaryIdentifier = '';
+    protected $primaryIdentifier = '';
+
+    abstract protected function get($id, $agency);
+    abstract protected function exists($id, $agency);
+    abstract protected function insert();
+    abstract protected function update($id, $agency);
+    abstract protected function delete($id, $agency);
 
     public function __construct(MongoEM $em)
     {
         $this->em = $em;
+    }
+
+    public function handleRequest($method)
+    {
+        $this->validate();
+        $requestResult = '';
+        $requestBody = $this->getParsedBody();
+
+        $id = $requestBody[$this->primaryIdentifier];
+        $agency = $requestBody['agency'];
+
+        switch ($method)
+        {
+            case 'POST':
+                if (!$this->exists($id, $agency))
+                {
+                    throw new RestException("Entity with id {$id}, agency {$agency} does not exist.");
+                }
+                else {
+                    $updatedContent = $this->update($id, $agency);
+                    $requestResult = 'Updated entity with id: ' . $updatedContent->getId();
+                }
+                break;
+            case 'PUT':
+                if ($this->exists($id, $agency))
+                {
+                    throw new RestException("Entity with id {$id}, agency {$agency} already exists.");
+                }
+                else {
+                    $insertedContent = $this->insert();
+                    $requestResult = 'Created entity with id: ' . $insertedContent->getId();
+                }
+                break;
+            case 'DELETE':
+                if (!$this->exists($id, $agency))
+                {
+                    throw new RestException("Entity with id {$id}, agency {$agency} does not exist.");
+                }
+                else {
+                    $deletedContent = $this->delete($id, $agency);
+                    $requestResult = 'Deleted entity with id: ' . $deletedContent->getId();
+                }
+                break;
+        }
+
+        return $requestResult;
     }
 
     public function setRequestBody($requestBody)
