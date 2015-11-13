@@ -1,5 +1,563 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-  <h1>Filmstriben REST stub.<h1>
+  <div class="operations-doc">
+    <div class="operation">
+        <h3>/content</h3>
+        <div class="operation-methods">
+            <div class="operation-method put">
+                <div class="heading">
+                    <p><strong><span class="method">PUT</span> /content</strong> <em>Create new content entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "agency":   {type: String, Required},
+        "type":     {type: String},
+        "fields":   {type: Object},
+        "taxonomy": {type: Object},
+        "list":     {type: Array}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>
+{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid":2,
+        "agency":"100000",
+        "type": "films",
+        "fields": {
+            "title": {
+                "name": "Title",
+                "value": "Original title",
+                "attr": ["plain text", "attr 2"]
+            },
+            "images": {
+                "name": "Cover images",
+                "value": ["serialied image 1", "serialized image 2"],
+                "attr": ["420x240"]
+            }
+        },
+        "taxonomy": {
+            "genre_tax":{
+                "name": "genre",
+                "terms": ["Drama", "Romance"]
+            },"contry_tax": {
+                "name": "country",
+                "terms": ["Denmark"]
+            }
+        },
+        "list": [14]
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method post">
+                <div class="heading">
+                    <p><strong><span class="method">POST</span> /content</strong> <em>Update an existing content entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "agency":   {type: String, Required},
+        "type":     {type: String},
+        "fields":   {type: Object},
+        "taxonomy": {type: Object},
+        "list":     {type: Array}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>
+{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid":2,
+        "agency":"100000",
+        "type": "films",
+        "fields": {
+            "title": {
+                "name": "Title",
+                "value": "Original title",
+                "attr": ["plain text", "attr 2"]
+            },
+            "images": {
+                "name": "Cover images",
+                "value": ["serialied image 1", "serialized image 2"],
+                "attr": ["420x240"]
+            }
+        },
+        "taxonomy": {
+            "genre_tax":{
+                "name": "genre",
+                "terms": ["Drama", "Romance"]
+            },"contry_tax": {
+                "name": "country",
+                "terms": ["Denmark"]
+            }
+        },
+        "list": [14]
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method delete">
+                <div class="heading">
+                    <p><strong><span class="method">DELETE</span> /content</strong> <em>Delete an existing content entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":
+    {
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "agency":   {type: Integer, Required}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":
+    {
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid":2,
+        "agency":"100000"
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="operation">
+        <h3>/content/fetch</h3>
+        <div class="operation-methods">
+            <div class="operation-method get">
+                <div class="heading">
+                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch single node content</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&node={type: Integer, Required}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&node=1</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method get">
+                <div class="heading">
+                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch several nodes content</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String, Required}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=10&sort=nid</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="operation">
+        <h3>/menu</h3>
+        <div class="operation-methods">
+            <div class="operation-method put">
+                <div class="heading">
+                    <p><strong><span class="method">PUT</span> /menu</strong> <em>Create new menu entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "mlid":   {type: Integer, Required},
+        "agency": {type: String, Required},
+        "type":   {type: String},
+        "name":   {type: String},
+        "url":    {type: String},
+        "order":  {type: Integer}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "mlid":1,
+        "agency":"100000",
+        "type": "main",
+        "name": "Home",
+        "url": "/",
+        "order":1
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method post">
+                <div class="heading">
+                    <p><strong><span class="method">POST</span> /menu</strong> <em>Update an existing menu entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "mlid":   {type: Integer, Required},
+        "agency": {type: String, Required},
+        "type":   {type: String},
+        "name":   {type: String},
+        "url":    {type: String},
+        "order":  {type: Integer}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+
+    },
+    "body":{
+        "mlid":1,
+        "agency":"100000",
+        "type": "main",
+        "name": "Homepage",
+        "url": "/frontpage",
+        "order":1
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method delete">
+                <div class="heading">
+                    <p><strong><span class="method">DELETE</span> /menu</strong> <em>Delete an existing menu entry</em></p>
+                </div>
+
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "mlid":      {type: Integer, Required},
+        "agency":   {type: Integer, Required}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+
+    },
+    "body":{
+        "mlid":1,
+        "agency":"100001"
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="operation">
+        <h3>/list</h3>
+        <div class="operation-methods">
+            <div class="operation-method put">
+                <div class="heading">
+                    <p><strong><span class="method">PUT</span> /list</strong> <em>Create new list entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "key":      {type: String, Required},
+        "agency":   {type: String, Required},
+        "name":     {type: String},
+        "nids":     {type: Array},
+        "type":     {type: String},
+        "promoted": {type: Boolean}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid": 1,
+        "key": "3fa",
+        "agency": "100002",
+        "name": "first",
+        "nids": [1,2],
+        "type": "spotlight",
+        "promoted": 1
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method post">
+                <div class="heading">
+                    <p><strong><span class="method">POST</span> /list</strong> <em>Update an existing list entry</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "key":      {type: String, Required},
+        "agency":   {type: String, Required},
+        "name":     {type: String},
+        "nids":     {type: Array},
+        "type":     {type: String},
+        "promoted": {type: Boolean}
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid": 1,
+        "key": "3fa",
+        "agency": "100002",
+        "name": "first",
+        "nids": [65,66,67],
+        "type": "sidebar",
+        "promoted": 0
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status":  {type: Boolean},
+  "message": {type: String},
+  "items":   {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="operation-method delete">
+                <div class="heading">
+                    <p><strong><span class="method">DELETE</span> /list</strong> <em>Delete an existing list entry</em></p>
+                </div>
+
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId": {type: String, Required},
+        "key":      {type: String, Required}
+    },
+    "body":{
+        "nid":      {type: Integer, Required},
+        "key":      {type: String, Required},
+        "agency":   {type: String, Required},
+    }
+}</pre>
+                        </p>
+                        <p class="request">
+                            <p class="title"><strong>Example:</strong></p>
+                            <pre>{
+    "credentials":{
+        "agencyId":"100000",
+        "key":"b11f8f062416fcbd7348ac39ca78e78b3b740cdf"
+    },
+    "body":{
+        "nid":1,
+        "key":"3fa",
+        "agency":"100000"
+    }
+}</pre>
+                        </p>
+                        <p class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array, Not used}
+}</pre>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
 {% endblock %}

@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding: 10px;
+}
+.doc-row,
+pre {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.operations-doc {
+  margin: 0 auto;
+  width: 1050px;
+}
+
+.operation-method {
+  margin-bottom: 10px;
+}
+
+.operation h3 {
+  text-decoration: underline;
+}
+
+.operation h3,
+.operation-method .heading {
+  cursor: pointer;
+  display: block;
+}
+
+.operation-method .heading .method {
+  background-color: gray;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 1.4em;
+  padding: 2px;
+}
+
+.operation .operation-methods,
+.operation-method .method-doc {
+  display: none;
+  margin-bottom: 10px;
+}
+
+.operation-methods,
+.method-doc {
+  padding-left: 20px;
+}
