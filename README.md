@@ -10,10 +10,10 @@ Documentation
 Installation
 ------------
 
-1. Clone the repository
-2. Run "composer install"
-3. Run cache clear "php app/console cache:clear --env=prod"
-4. Setup a vhost to point to repo root
+1. Clone the repository.
+2. Run ``composer install``.
+3. Run ``cache clear "php app/console cache:clear --env=prod``.
+4. Setup a vhost to point to repository root.
 
 License
 -------
