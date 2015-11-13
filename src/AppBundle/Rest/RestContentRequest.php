@@ -61,11 +61,6 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    protected function fetch($id, $agency)
-    {
-
-    }
-
     protected function insert()
     {
         $entity = $this->prepare(new FSContent());
