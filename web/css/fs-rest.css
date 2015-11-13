@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding: 10px;
+}
+
+pre {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.operations-doc {
+  margin: 0 auto;
+  width: 1050px;
+}
+
+.operation h3,
+.operation-method .heading {
+  cursor: pointer;
+  display: block;
+  text-decoration: underline;
+}
+
+.operation .operation-methods,
+.operation-method .method-doc {
+  display: none;
+  margin-bottom: 10px;
+}
+
+.operation-methods,
+.method-doc {
+  padding-left: 20px;
+}
