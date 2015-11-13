@@ -22,6 +22,7 @@ abstract class RestBaseRequest
     abstract protected function insert();
     abstract protected function update($id, $agency);
     abstract protected function delete($id, $agency);
+    abstract protected function fetch($id, $agency);
 
     public function __construct(MongoEM $em)
     {
@@ -147,7 +148,6 @@ abstract class RestBaseRequest
         );
 
         $requestCredentials = $this->getParsedCredentials();
-
         foreach ($requiredFields as $field)
         {
             if (empty($requestCredentials[$field]))

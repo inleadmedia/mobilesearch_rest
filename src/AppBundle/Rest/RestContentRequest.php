@@ -44,6 +44,28 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
+    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC')
+    {
+        $criteria = array(
+            'agency' => $agency,
+        );
+
+        $order = array(
+            $sort => $dir,
+        );
+
+        $content = $this->em
+            ->getRepository('AppBundle:Content')
+            ->findBy($criteria, $order, $amount);
+
+        return $content;
+    }
+
+    protected function fetch($id, $agency)
+    {
+
+    }
+
     protected function insert()
     {
         $entity = $this->prepare(new FSContent());
@@ -73,6 +95,13 @@ class RestContentRequest extends RestBaseRequest
         $dm = $this->em->getManager();
         $dm->remove($entity);
         $dm->flush();
+
+        return $entity;
+    }
+
+    public function fetchContent($id, $agency)
+    {
+        $entity = $this->get($id, $agency);
 
         return $entity;
     }
