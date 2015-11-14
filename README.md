@@ -1,6 +1,8 @@
 MobileSearch RESTful API
 =====================
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/build-status/master)
 
 Documentation
 -------------
