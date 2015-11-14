@@ -33,7 +33,7 @@ class RestContentRequest extends RestBaseRequest
     protected function get($id, $agency)
     {
         $criteria = array(
-            $this->primaryIdentifier => $id,
+            $this->primaryIdentifier => (int) $id,
             'agency' => $agency,
         );
 
