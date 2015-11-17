@@ -34,7 +34,7 @@ class RestListsRequest extends RestBaseRequest
     protected function get($id, $agency)
     {
         $criteria = array(
-            $this->primaryIdentifier => (int) $id,
+            $this->primaryIdentifier => $id,
             'agency' => $agency,
         );
 
