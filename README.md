@@ -9,13 +9,39 @@ Documentation
 
 [Read the Documentation](http://am.fs_rest.dev.inlead.dk/web/)
 
+Requirements
+------------
+1. PHP 5.4+
+2. composer
+3. php5-mongo extension
+4. mongodb storage
+
 Installation
 ------------
 
 1. Clone the repository.
+2. ``cd PATH_TO_CLONED_REPO``;
 2. Run ``composer install``.
-3. Run ``cache clear "php app/console cache:clear --env=prod``.
-4. Setup a vhost to point to repository root.
+3. Run ``cache clear php app/console cache:clear --env=prod``.
+4. Setup a vhost to point to repository root;
+5. Service available @ `http://SERVICE_URL/web/` (this URL should be used as communication endpoint).
+
+Configuration
+------------
+Mostly no config is required, yet database settings can be changed in `app/config.yml`.
+
+First time run
+------------
+Using a mongodb admin tool (e.g. Rockmongo) or any else create the required database (as in `config.yml`, by default it's `fs`).
+Create `Agency` collection and fill it with required agency crendentials, e.g.:
+```
+{
+   "agencyId": "100000",
+   "key": "3fa",
+   "name": "Dummy",
+   "children": []
+}	
+```
 
 License
 -------
