@@ -22,7 +22,7 @@ Installation
 1. Clone the repository.
 2. ``cd PATH_TO_CLONED_REPO``;
 2. Run ``composer install``.
-3. Run ``cache clear php app/console cache:clear --env=prod``.
+3. Run ``php app/console cache:clear --env=prod``.
 4. Setup a vhost to point to repository root;
 5. Service available @ `http://SERVICE_URL/web/` (this URL should be used as communication endpoint).
 
