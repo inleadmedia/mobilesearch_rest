@@ -134,28 +134,37 @@ class RestContentRequest extends RestBaseRequest
      */
     private function parseFields(array $fields)
     {
-      foreach ($fields as $field_name => $field_value) {
-        if (!empty($field_value['value']) && isset($field_value['attr']['filemime']) && preg_match('/^image\/(jpg|jpeg|gif|png)$/', $field_value['attr']['filemime'])) {
-          $file_ext = explode('/', $field_value['attr']['filemime']);
-          $extension = isset($file_ext[1]) ? $file_ext[1] : '';
-          $file_contents = $field_value['value'];
-          $fields[$field_name]['value'] = NULL;
+      $image_fields = array('field_images', 'field_background_image');
+      foreach ($fields as $field_name => &$field_value) {
+        if (in_array($field_name, $image_fields)) {
+          if (!is_array($field_value['value'])) {
+            $field_value['value'] = array($field_value['value']);
+          }
 
-          if (!empty($extension)) {
-            $fs = new FSys();
+          foreach ($field_value['value'] as $k => $value) {
+            if (!empty($value) && isset($field_value['attr'][$k]) && preg_match('/^image\/(jpg|jpeg|gif|png)$/', $field_value['attr'][$k])) {
+              $file_ext = explode('/', $field_value['attr'][$k]);
+              $extension = isset($file_ext[1]) ? $file_ext[1] : '';
+              $file_contents = $field_value['value'][$k];
+              $fields[$field_name]['value'][$k] = NULL;
 
-            $dir = '../web/files/' . $this->agencyId;
-            if (!$fs->exists($dir))
-            {
-              $fs->mkdir($dir);
-            }
+              if (!empty($extension)) {
+                $fs = new FSys();
 
-            $filename = md5($field_value['value'] . $this->agencyId) . '.' . $extension;
-            $path = $dir . '/' . $filename;
+                $dir = '../web/files/' . $this->agencyId;
+                if (!$fs->exists($dir))
+                {
+                  $fs->mkdir($dir);
+                }
 
-            $fs->dumpFile($path, base64_decode($file_contents));
-            if ($fs->exists($path)) {
-              $fields[$field_name]['value'] = 'files/' . $this->agencyId . '/' . $filename;
+                $filename = sha1($value . $this->agencyId) . '.' . $extension;
+                $path = $dir . '/' . $filename;
+
+                $fs->dumpFile($path, base64_decode($file_contents));
+                if ($fs->exists($path)) {
+                  $field_value['value'][$k] = 'files/' . $this->agencyId . '/' . $filename;
+                }
+              }
             }
           }
         }
