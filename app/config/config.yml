@@ -79,6 +79,7 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+# MongoDB Configuration
 doctrine_mongodb:
     connections:
         default:

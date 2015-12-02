@@ -6,6 +6,7 @@
 namespace AppBundle\Rest;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
+use Symfony\Component\Filesystem\Filesystem as FSys;
 
 use AppBundle\Rest\RestBaseRequest;
 use AppBundle\Document\Content as FSContent;
@@ -115,6 +116,7 @@ class RestContentRequest extends RestBaseRequest
         $content->setType($type);
 
         $fields = !empty($body['fields']) ? $body['fields'] : array();
+        $fields = $this->parseFields($fields);
         $content->setFields($fields);
 
         $taxonomy = !empty($body['taxonomy']) ? $body['taxonomy'] : array();
@@ -124,5 +126,41 @@ class RestContentRequest extends RestBaseRequest
         $content->setList($list);
 
         return $content;
+    }
+
+    /**
+     * @todo
+     * Quick'n'dirty.
+     */
+    private function parseFields(array $fields)
+    {
+      foreach ($fields as $field_name => $field_value) {
+        if (!empty($field_value['value']) && isset($field_value['attr']['filemime']) && preg_match('/^image\/(jpg|jpeg|gif|png)$/', $field_value['attr']['filemime'])) {
+          $file_ext = explode('/', $field_value['attr']['filemime']);
+          $extension = isset($file_ext[1]) ? $file_ext[1] : '';
+          $file_contents = $field_value['value'];
+          $fields[$field_name]['value'] = NULL;
+
+          if (!empty($extension)) {
+            $fs = new FSys();
+
+            $dir = '../web/files/' . $this->agencyId;
+            if (!$fs->exists($dir))
+            {
+              $fs->mkdir($dir);
+            }
+
+            $filename = md5($field_value['value'] . $this->agencyId) . '.' . $extension;
+            $path = $dir . '/' . $filename;
+
+            $fs->dumpFile($path, base64_decode($file_contents));
+            if ($fs->exists($path)) {
+              $fields[$field_name]['value'] = 'files/' . $this->agencyId . '/' . $filename;
+            }
+          }
+        }
+      }
+
+      return $fields;
     }
 }

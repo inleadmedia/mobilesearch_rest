@@ -28,7 +28,8 @@ Installation
 
 Configuration
 ------------
-Mostly no config is required, yet database settings can be changed in `app/config.yml`.
+1. Create and make writebale directory `web/files`;
+2. Adjust mongodb settings in `app/config.yml`.
 
 First time run
 ------------

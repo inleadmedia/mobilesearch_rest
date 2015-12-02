@@ -18,6 +18,37 @@
         ...
     }
 }</pre>
+      <br />
+      <p>The <em>body</em> section is a collection of fields that a certain node consists of.</p>
+      <p>The structure is not strict (yet) and the recommended structure of each field representation shall be:</p>
+      <pre>"{type: String}":{
+      "name": {type: String}",
+      "value": {type: String},
+      "attr": {type: Collection}
+}
+      </pre>
+      <p>A <em>title</em> field example representation looks like:</p>
+      <pre>"title":{
+      "name":"Title",
+      "value":"Alpha editorial",
+      "attr":[]
+}</pre>
+      <p>If a field is an <em>image</em> field, the <em>value</em> property is an encoded value of the image contents using base64 encoding.</p>
+      <p>For the server to capture the actual image and create a physical file, the <em>attr</em> collection should have a key/value pair with the file mime of the image.</p>
+      <p>Curently supporting mime types are JPG/JPEG/PNG/GIF.</p>
+      <p>For example:</p>
+      <pre>"field_background_image":{
+      "name":"Backgound image",
+      "value":"R0lGODlh/AGM...",
+      "attr":{
+            "filemime":"image/gif"
+      }
+}</pre>
+      <p>The <em>value</em> property will be replaced by the relative path to the file (if teh file could be created).</p>
+      <p>To create a URL to this file, prepend the path in the field with webservice URL used for communication.</p>
+      <p>For example the webservice url is <em>http://example.com/web/</em> and the image path is <em>files/100000/4d869d74713a19a622d2dab252f9b8dc.gif</em></p>
+      <p>The resulting URL for the image is <em>http://example.com/web/files/100000/4d869d74713a19a622d2dab252f9b8dc.gif</em></p>
+      <br />
       <p>The <em>credentials</em> section is used for basic authorisation and the <em>body</em> defines the entity that has to manipulated.
       <p>Best to note the <em>key</em> parameter.</p>
       <p>It is used for creating a basic signature of the request, so one agency could not access or modify data owned by another agency.</p>
