@@ -134,7 +134,18 @@ class RestContentRequest extends RestBaseRequest
      */
     private function parseFields(array $fields)
     {
-      $image_fields = array('field_images', 'field_background_image');
+      $image_fields = array(
+        'field_images',
+        'field_background_image',
+        'field_ding_event_title_image',
+        'field_ding_event_list_image',
+        'field_ding_library_title_image',
+        'field_ding_library_list_image',
+        'field_ding_news_title_image',
+        'field_ding_news_list_image',
+        'field_ding_page_title_image',
+        'field_ding_page_list_image',
+      );
       foreach ($fields as $field_name => &$field_value) {
         if (in_array($field_name, $image_fields)) {
           if (!is_array($field_value['value'])) {
