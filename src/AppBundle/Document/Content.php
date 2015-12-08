@@ -33,12 +33,12 @@ class Content
     protected $type;
 
     /**
-     * @MongoDB\collection
+     * @MongoDB\Hash
      */
     protected $fields;
 
     /**
-     * @MongoDB\collection
+     * @MongoDB\Hash
      */
     protected $taxonomy;
 
