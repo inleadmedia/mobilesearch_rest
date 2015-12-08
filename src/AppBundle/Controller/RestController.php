@@ -61,8 +61,10 @@ final class RestController extends Controller
                 'key' => NULL,
                 'amount' => NULL,
                 'sort' => NULL,
+                'order' => NULL,
                 'node' => NULL,
                 'property' => NULL,
+                'type' => NULL,
             );
 
             foreach (array_keys($fields) as $field) {
@@ -95,9 +97,9 @@ final class RestController extends Controller
                     $this->lastMessage = "Entity with id {$fields['node']}, agency {$fields['agency']} does not exist.";
                 }
             }
-            elseif (!empty($fields['amount']) && !empty($fields['sort']))
+            elseif (!empty($fields['amount']))
             {
-                $items = $rcr->fetchXAmount($fields['agency'], $fields['amount'], $fields['sort'], 'DESC');
+                $items = $rcr->fetchXAmount($fields['agency'], $fields['amount'], $fields['sort'], $fields['order'], $fields['type']);
                 $this->lastItems = array();
                 foreach ($items as $item) {
                     $this->lastItems[] = array(

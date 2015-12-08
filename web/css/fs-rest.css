@@ -20,6 +20,10 @@ pre {
   padding: 5px;
 }
 
+pre {
+  overflow: scroll;
+}
+
 .operations-doc {
   margin: 0 auto;
   width: 1050px;

@@ -45,15 +45,22 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC')
+    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC', $type = NULL)
     {
         $criteria = array(
             'agency' => $agency,
         );
 
-        $order = array(
+        $order = array();
+        if ($sort && $dir) {
+          $order = array(
             $sort => $dir,
-        );
+          );
+        }
+
+        if ($type) {
+          $criteria['type'] = $type;
+        }
 
         $content = $this->em
             ->getRepository('AppBundle:Content')

@@ -304,17 +304,27 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
             </div>
             <div class="operation-method get">
                 <div class="heading">
-                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch several nodes content sorted by a property</em></p>
+                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch several nodes content</em></p>
                 </div>
                 <div class="method-doc">
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String, Required}</pre>
+                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String}&order={type: String}&type={type: String}</pre>
+                        </div>
+                        <p>Note: The <em>sort</em> param is ignored if no <em>order</em> is specified (asc|desc).</p>
+                        <br />
+                        <div class="example">
+                            <p class="title"><strong>Example - Fetch 10 nodes of any type:</strong></p>
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=10" />
                         </div>
                         <div class="example">
-                            <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=10&sort=nid" />
+                            <p class="title"><strong>Example - Fetch 2 nodes of type 'editorial':</strong></p>
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&type=editorial" />
+                        </div>
+                        <div class="example">
+                            <p class="title"><strong>Example - Fetch 2 nodes of type 'spotlight', sorted by node id, ascending:</strong></p>
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&type=spotlight&sort=nid&order=asc" />
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>
@@ -324,6 +334,7 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
   "items": {type: Array}
 }</pre>
                         </div>
+
                     </div>
                 </div>
             </div>
