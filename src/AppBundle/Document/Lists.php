@@ -53,6 +53,11 @@ class Lists
     protected $promoted;
 
     /**
+     * @MongoDB\integer
+     */
+    protected $weight;
+
+    /**
      * Get id
      *
      * @return id $id
@@ -214,5 +219,27 @@ class Lists
     public function getPromoted()
     {
         return $this->promoted;
+    }
+
+    /**
+     * Set weight
+     *
+     * @param integer $weight
+     * @return self
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+        return $this;
+    }
+
+    /**
+     * Get weight
+     *
+     * @return integer $weight
+     */
+    public function getWeight()
+    {
+        return $this->weight;
     }
 }
