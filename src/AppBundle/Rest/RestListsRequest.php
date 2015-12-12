@@ -103,6 +103,9 @@ class RestListsRequest extends RestBaseRequest
         $promoted = !empty($body['promoted']) ? $body['promoted'] : array();
         $list->setPromoted($promoted);
 
+        $weight = !empty($body['weight']) ? $body['weight'] : 0;
+        $list->setWeight($weight);
+
         return $list;
     }
 }
