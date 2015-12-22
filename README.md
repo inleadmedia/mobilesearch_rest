@@ -28,7 +28,7 @@ Installation
 
 Configuration
 ------------
-1. Create and make writebale directory `web/files`;
+1. Create and make writebale directory `./web/storage`;
 2. Adjust mongodb settings in `app/config.yml`.
 
 First time run

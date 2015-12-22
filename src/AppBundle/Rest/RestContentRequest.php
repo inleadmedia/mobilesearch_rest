@@ -169,7 +169,7 @@ class RestContentRequest extends RestBaseRequest
               if (!empty($extension)) {
                 $fs = new FSys();
 
-                $dir = '../web/files/' . $this->agencyId;
+                $dir = '../web/storage/images/' . $this->agencyId;
                 if (!$fs->exists($dir))
                 {
                   $fs->mkdir($dir);
