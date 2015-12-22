@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 
 class ImageController extends Controller
 {
-    protected $filesStorageDir = '../web/files';
+    protected $filesStorageDir = '../web/storage/images';
     protected $response;
 
     /**
@@ -103,7 +103,7 @@ class ImageController extends Controller
         catch (FileNotFoundException $e)
         {
             $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
-            $this->response->setContent('Requested file not found.');
+            $this->response->setContent('File not found.');
         }
     }
 
