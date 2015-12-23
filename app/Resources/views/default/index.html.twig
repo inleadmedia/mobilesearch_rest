@@ -670,44 +670,20 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
         <div class="operation-methods">
             <div class="operation-method get">
                 <div class="heading">
-                    <p><strong><span class="method">GET</span> /files/{agency}/{filename}</strong> <em>Fetch an image asset</em></p>
+                    <p><strong><span class="method">GET</span> /files/{agency}/{filename}</strong> <em>Fetch an image asset (optionally resized)</em></p>
                 </div>
                 <div class="method-doc">
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/files/{agency}/{filename}</pre>
-                        </div>
-                        <div class="example">
-                            <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/files/100000/f623904c5b082f97ea2134bab94af6e2745e0ac3.jpeg" />
-                        </div>
-                        <div class="response">
-                            <p class="title"><strong>Response:</strong></p>
-                            <p>An image stream with HTTP status 200 if the image is found. HTTP status 404 with a text message otherwise.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="operation-method get">
-                <div class="heading">
-                    <p><strong><span class="method">GET</span> /files/{agency}/{filename}</strong> <em>Fetch an image asset resized</em></p>
-                </div>
-                <div class="method-doc">
-                    <div class="doc-row">
-                        <div class="request">
-                            <p class="title"><strong>Request:</strong></p>
-                            <pre>/files/{agency}/{filename}?resize={type: String, Required}</pre>
+                            <pre>/files/{agency}/{filename}?resize={type: String}</pre>
+                            <p>Note: If <em>resize</em> parameter is ommitted the original image is served.</p>
                             <p>Note: <em>resize</em> parameter must maintain the following structure: <em>WIDTHxHEIGHT</em></p>
-                            <p>If one of the params is ommitted (e.g. 720x, x500) or equals to zero (0) the image is resized maintaining it's aspect ratio.</p>
+                            <p>Note: Resulted image aspect ratio is preserved. If requested size differs from original aspect ratio, the image is scaled and cropped at the center.</p>
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
                             <input type="text" readonly="readonly" value="/files/100000/f623904c5b082f97ea2134bab94af6e2745e0ac3.jpeg?resize=1280x720" />
-                        </div>
-                        <div class="example">
-                            <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/files/100000/f623904c5b082f97ea2134bab94af6e2745e0ac3.jpeg?resize=550x" />
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>
