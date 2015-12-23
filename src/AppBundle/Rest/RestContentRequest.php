@@ -45,7 +45,7 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC', $type = NULL)
+    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC', $type = NULL, $skip = 0)
     {
         $criteria = array(
             'agency' => $agency,
@@ -64,7 +64,7 @@ class RestContentRequest extends RestBaseRequest
 
         $content = $this->em
             ->getRepository('AppBundle:Content')
-            ->findBy($criteria, $order, $amount);
+            ->findBy($criteria, $order, (int) $amount, (int) $skip);
 
         return $content;
     }

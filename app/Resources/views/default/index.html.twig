@@ -110,7 +110,6 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
     }
 }</pre>
                         </div>
-                        <br />
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
                             <textarea readonly="readonly">{
@@ -314,10 +313,9 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String}&order={type: String}&type={type: String}</pre>
+                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String}&order={type: String}&type={type: String}&skip={type: Integer}</pre>
                         </div>
                         <p>Note: The <em>sort</em> param is ignored if no <em>order</em> is specified (asc|desc).</p>
-                        <br />
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 10 nodes of any type:</strong></p>
                             <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=10" />
@@ -329,6 +327,11 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 2 nodes of type 'spotlight', sorted by node id, ascending:</strong></p>
                             <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&type=spotlight&sort=nid&order=asc" />
+                        </div>
+                        <div class="example">
+                            <p class="title"><strong>Example - Fetch 2 nodes of type 'spotlight', starting from 3rd record, sorted by node id, ascending:</strong></p>
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&skip=2&type=spotlight&sort=nid&order=asc" />
+                            <p>Note: The <em>skip</em> parameter denotes how many records to skip, i.e. start from skip + 1 record in the result.</p>
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>
