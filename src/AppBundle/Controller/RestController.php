@@ -65,6 +65,7 @@ final class RestController extends Controller
                 'node' => NULL,
                 'property' => NULL,
                 'type' => NULL,
+                'skip' => NULL,
             );
 
             foreach (array_keys($fields) as $field) {
@@ -99,7 +100,7 @@ final class RestController extends Controller
             }
             elseif (!empty($fields['amount']))
             {
-                $items = $rcr->fetchXAmount($fields['agency'], $fields['amount'], $fields['sort'], $fields['order'], $fields['type']);
+                $items = $rcr->fetchXAmount($fields['agency'], $fields['amount'], $fields['sort'], $fields['order'], $fields['type'], $fields['skip']);
                 $this->lastItems = array();
                 foreach ($items as $item) {
                     $this->lastItems[] = array(

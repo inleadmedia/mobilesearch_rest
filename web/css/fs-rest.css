@@ -9,6 +9,10 @@ body {
   padding: 10px;
 }
 
+.example {
+  margin: 5px 0;
+}
+
 input,
 textarea,
 .operation,
@@ -20,8 +24,11 @@ pre {
   padding: 5px;
 }
 
-pre {
+input,
+pre,
+textarea {
   overflow: scroll;
+  font-family: courier;
 }
 
 .operations-doc {
