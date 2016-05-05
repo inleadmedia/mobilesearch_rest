@@ -282,17 +282,18 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
         <div class="operation-methods">
             <div class="operation-method get">
                 <div class="heading">
-                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch single node content</em></p>
+                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch single or several nodes content</em></p>
                 </div>
                 <div class="method-doc">
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&node={type: Integer, Required}</pre>
+                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&node={type: String, Required}</pre>
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
                             <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&node=1" />
+                            <p>Note: The <em>node</em> param can be either a single node id or a comma-separated list of id's.</p>
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>
@@ -307,7 +308,7 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
             </div>
             <div class="operation-method get">
                 <div class="heading">
-                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch several nodes content</em></p>
+                    <p><strong><span class="method">GET</span> /content/fetch</strong> <em>Fetch paged and sorted nodes content</em></p>
                 </div>
                 <div class="method-doc">
                     <div class="doc-row">
@@ -347,6 +348,41 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
         </div>
     </div>
     <!-- /content/fetch END -->
+
+    <!-- /content/search -->
+    <div class="operation">
+      <h3>/content/search</h3>
+      <div class="operation-methods">
+          <div class="operation-method get">
+              <div class="heading">
+                  <p><strong><span class="method">GET</span> /content/search</strong> <em>Search content</em></p>
+              </div>
+              <div class="method-doc">
+                  <div class="doc-row">
+                      <div class="request">
+                          <p class="title"><strong>Request:</strong></p>
+                          <pre>/content/search?agency={type: String, Required}&key={type: String, Required}&query={type: String, Required}&field={type: String, Required}</pre>
+                      </div>
+                      <div class="example">
+                          <p class="title"><strong>Example - search for nodes with 'ding_event' string inside the 'type' field:</strong></p>
+                          <input type="text" readonly="readonly" value="/content/search?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&query=ding_news&field=type" />
+                          <p>Note: The <em>query</em> param accepts regular expressions, so a partial or patterned search can be performed.</p>
+                          <p>Note: The <em>field</em> param is a key found in the response node object. Nested field values can be delimited by dot ("."). Therefore to search in the node title, the value is 'fields.title.value'.</p>
+                      </div>
+                      <div class="response">
+                          <p class="title"><strong>Response:</strong></p>
+                        <pre>{
+    "status": {type: Boolean},
+    "message": {type: String},
+    "items": {type: Array}
+}</pre>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!-- /content/search END -->
 
     <!-- /menu -->
     <div class="operation">

@@ -80,17 +80,21 @@ final class RestController extends Controller
             }
             elseif (!empty($fields['node']))
             {
-                $item = $rcr->fetchContent((int) $fields['node'], $fields['agency']);
-                if ($item) {
-                    $this->lastItems = array(
-                        'id' => $item->getId(),
-                        'nid' => $item->getNid(),
-                        'agency' => $item->getAgency(),
-                        'type' => $item->getType(),
-                        'fields' => $item->getFields(),
-                        'taxonomy' => $item->getTaxonomy(),
-                        'list' => $item->getList(),
-                    );
+                $nids = explode(',', $fields['node']);
+
+                $items = $rcr->fetchContent($nids, $fields['agency']);
+                if (!empty($items)) {
+                    foreach ($items as $item) {
+                        $this->lastItems[] = array(
+                          'id' => $item->getId(),
+                          'nid' => $item->getNid(),
+                          'agency' => $item->getAgency(),
+                          'type' => $item->getType(),
+                          'fields' => $item->getFields(),
+                          'taxonomy' => $item->getTaxonomy(),
+                          'list' => $item->getList(),
+                        );
+                    }
 
                     $this->lastStatus = TRUE;
                 }
@@ -123,6 +127,54 @@ final class RestController extends Controller
         }
 
         return $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastItems);
+    }
+
+    /**
+     * @Route("/content/search")
+     */
+    function searchAction(Request $request)
+    {
+        $this->lastMethod = $request->getMethod();
+
+        if ($this->lastMethod == 'GET') {
+            $fields = array(
+              'agency' => null,
+              'key' => null,
+              'field' => null,
+              'query' => null,
+            );
+
+            foreach (array_keys($fields) as $field) {
+                $fields[$field] = $request->query->get($field);
+            }
+
+            $em = $this->get('doctrine_mongodb');
+            $rcr = new RestContentRequest($em);
+
+            if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
+                $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+            } elseif (!empty($fields['query'])) {
+                $this->lastItems = array();
+                $suggestions = $rcr->fetchSuggestions($fields['query'], $fields['field']);
+                foreach ($suggestions as $suggestion) {
+                    $fields = $suggestion->getFields();
+                    $this->lastItems[] = array(
+                      'id' => $suggestion->getId(),
+                      'nid' => $suggestion->getNid(),
+                      'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
+                      'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
+                    );
+                }
+
+                $this->lastStatus = TRUE;
+            }
+        }
+
+        return $this->setResponse(
+          $this->lastStatus,
+          $this->lastMessage,
+          $this->lastItems
+        );
     }
 
     /**
