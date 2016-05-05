@@ -155,7 +155,8 @@ final class RestController extends Controller
                 $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
             } elseif (!empty($fields['query'])) {
                 $this->lastItems = array();
-                $suggestions = $rcr->fetchSuggestions($fields['query'], $fields['field']);
+
+                $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
                 foreach ($suggestions as $suggestion) {
                     $fields = $suggestion->getFields();
                     $this->lastItems[] = array(

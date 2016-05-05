@@ -69,12 +69,15 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchSuggestions($query, $field = 'fields.title.value')
+    public function fetchSuggestions($agency, $query, $field = 'fields.title.value')
     {
         $content = $this->em
           ->getRepository('AppBundle:Content')
           ->findBy(
-            array($field => new \MongoRegex('/'.$query.'/i'))
+            array(
+              'agency' => $agency,
+              $field => new \MongoRegex('/'.$query.'/i'),
+            )
           );
 
         return $content;
