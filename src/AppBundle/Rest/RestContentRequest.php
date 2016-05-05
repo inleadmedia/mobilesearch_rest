@@ -69,6 +69,17 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
+    public function fetchSuggestions($query, $field = 'fields.title.value')
+    {
+        $content = $this->em
+          ->getRepository('AppBundle:Content')
+          ->findBy(
+            array($field => new \MongoRegex('/'.$query.'/i'))
+          );
+
+        return $content;
+    }
+
     protected function insert()
     {
         $entity = $this->prepare(new FSContent());
@@ -102,11 +113,22 @@ class RestContentRequest extends RestBaseRequest
         return $entity;
     }
 
-    public function fetchContent($id, $agency)
+    public function fetchContent(array $ids, $agency)
     {
-        $entity = $this->get($id, $agency);
+        $entities = array();
 
-        return $entity;
+        foreach ($ids as $id) {
+            if (!is_numeric($id)) {
+                continue;
+            }
+
+            $entity = $this->get((int) $id, $agency);
+            if ($entity) {
+                $entities[] = $entity;
+            }
+        }
+
+        return $entities;
     }
 
     public function prepare(FSContent $content)
