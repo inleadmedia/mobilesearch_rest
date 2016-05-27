@@ -157,7 +157,7 @@ class ImageController extends Controller
             // Get the coordinates where from to crop the final portion.
             // This one crops from the center of the resized image.
             $crop_x = $box_width / 2 - $targetWidth / 2;
-            $crop_y = $box_height / 2 - $targetHeight / 2;
+            $crop_y = 0; //$box_height / 2 - $targetHeight / 2;
 
             $cropPoint = new Point($crop_x, $crop_y);
         }
