@@ -288,11 +288,11 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&node={type: String, Required}</pre>
+                            <pre>/content/fetch?agency={type: String, Required}&amp;key={type: String, Required}&amp;node={type: String, Required}</pre>
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&node=1" />
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;node=1" />
                             <p>Note: The <em>node</em> param can be either a single node id or a comma-separated list of id's.</p>
                         </div>
                         <div class="response">
@@ -314,24 +314,24 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/content/fetch?agency={type: String, Required}&key={type: String, Required}&amount={type: Integer, Required}&sort={type: String}&order={type: String}&type={type: String}&skip={type: Integer}</pre>
+                            <pre>/content/fetch?agency={type: String, Required}&amp;key={type: String, Required}&amp;amount={type: Integer, Required}&amp;sort={type: String}&amp;order={type: String}&amp;type={type: String}&amp;skip={type: Integer}</pre>
                         </div>
                         <p>Note: The <em>sort</em> param is ignored if no <em>order</em> is specified (asc|desc).</p>
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 10 nodes of any type:</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=10" />
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;amount=10" />
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 2 nodes of type 'editorial':</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&type=editorial" />
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;amount=2&amp;type=editorial" />
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 2 nodes of type 'spotlight', sorted by node id, ascending:</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&type=spotlight&sort=nid&order=asc" />
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;amount=2&amp;type=spotlight&amp;sort=nid&amp;order=asc" />
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example - Fetch 2 nodes of type 'spotlight', starting from 3rd record, sorted by node id, ascending:</strong></p>
-                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amount=2&skip=2&type=spotlight&sort=nid&order=asc" />
+                            <input type="text" readonly="readonly" value="/content/fetch?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;amount=2&amp;skip=2&amp;type=spotlight&amp;sort=nid&amp;order=asc" />
                             <p>Note: The <em>skip</em> parameter denotes how many records to skip, i.e. start from skip + 1 record in the result.</p>
                         </div>
                         <div class="response">
@@ -361,11 +361,11 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                   <div class="doc-row">
                       <div class="request">
                           <p class="title"><strong>Request:</strong></p>
-                          <pre>/content/search?agency={type: String, Required}&key={type: String, Required}&query={type: String, Required}&field={type: String, Required}</pre>
+                          <pre>/content/search?agency={type: String, Required}&amp;key={type: String, Required}&amp;query={type: String, Required}&amp;field={type: String, Required}</pre>
                       </div>
                       <div class="example">
                           <p class="title"><strong>Example - search for nodes with 'ding_event' string inside the 'type' field:</strong></p>
-                          <input type="text" readonly="readonly" value="/content/search?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&query=ding_news&field=type" />
+                          <input type="text" readonly="readonly" value="/content/search?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;query=ding_news&amp;field=type" />
                           <p>Note: The <em>query</em> param accepts regular expressions, so a partial or patterned search can be performed.</p>
                           <p>Note: The <em>field</em> param is a key found in the response node object. Nested field values can be delimited by dot ("."). Therefore to search in the node title, the value is 'fields.title.value'.</p>
                       </div>
@@ -396,11 +396,11 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                   <div class="doc-row">
                       <div class="request">
                           <p class="title"><strong>Request:</strong></p>
-                          <pre>/content/related?agency={type: String, Required}&key={type: String, Required}&vocabulary[]={type: String, Required}&terms[]={type: String, Required}</pre>
+                          <pre>/content/related?agency={type: String, Required}&amp;key={type: String, Required}&amp;vocabulary[]={type: String, Required}&amp;terms[]={type: String, Required}</pre>
                       </div>
                       <div class="example">
                           <p class="title"><strong>Example - fetch nodes which contain the taxonomy field named 'field_ding_event_category' with terms present 'Foredrag' and 'Workshop':</strong></p>
-                          <input type="text" readonly="readonly" value="/content/related?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&vocabulary[]=field_ding_event_category&terms[]=Foredrag,Workshop" />
+                          <input type="text" readonly="readonly" value="/content/related?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&amp;vocabulary[]=field_ding_event_category&amp;terms[]=Foredrag,Workshop" />
                           <p>Note: Observe that <em>vocabulary</em> and <em>terms</em> parameters are arrays, meaning tha multiple entries can be defined.</p>
                           <p>Note: Every <em>vocabulary</em> parameter must be paired with <em>terms</em> parameter, i.e. having 2 <em>vocabulary</em> parameters and 3 <em>terms</em> parameters will result in error.</p>
                           <p>Note: Multiple <em>vocabulary</em> and <em>terms</em> parameter entries create a request where the resulting nodes must contain at least one term from each vocabulary.</p>
@@ -789,7 +789,7 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/taxonomy/terms/field_ding_news_category/ding_news/a?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
+                            <input type="text" readonly="readonly" value="/taxonomy/terms/field_ding_news_category/ding_news/a?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
                             <p>Note: The <em>query</em> parameter accepts regular expressions.</p>
                         </div>
                         <div class="response">
@@ -820,11 +820,11 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/taxonomy/vocabularies/{content_type}?agency={type: String, Required}&key={type: String, Required}</pre>
+                            <pre>/taxonomy/vocabularies/{content_type}?agency={type: String, Required}&amp;key={type: String, Required}</pre>
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/taxonomy/vocabularies/ding_news?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
+                            <input type="text" readonly="readonly" value="/taxonomy/vocabularies/ding_news?agency=100000&amp;key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>
