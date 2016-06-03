@@ -283,7 +283,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/taxonomy/related")
+     * @Route("/content/related")
      * @Method({"GET"})
      */
     public function taxonomyRelatedContentAction(Request $request)

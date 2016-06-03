@@ -384,6 +384,43 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
     </div>
     <!-- /content/search END -->
 
+    <!-- /content/related -->
+    <div class="operation">
+      <h3>/content/related</h3>
+      <div class="operation-methods">
+          <div class="operation-method get">
+              <div class="heading">
+                  <p><strong><span class="method">GET</span> /content/related</strong> <em>Fetch content related to taxonomy fields</em></p>
+              </div>
+              <div class="method-doc">
+                  <div class="doc-row">
+                      <div class="request">
+                          <p class="title"><strong>Request:</strong></p>
+                          <pre>/content/related?agency={type: String, Required}&key={type: String, Required}&vocabulary[]={type: String, Required}&terms[]={type: String, Required}</pre>
+                      </div>
+                      <div class="example">
+                          <p class="title"><strong>Example - fetch nodes which contain the taxonomy field named 'field_ding_event_category' with terms present 'Foredrag' and 'Workshop':</strong></p>
+                          <input type="text" readonly="readonly" value="/content/related?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf&vocabulary[]=field_ding_event_category&terms[]=Foredrag,Workshop" />
+                          <p>Note: Observe that <em>vocabulary</em> and <em>terms</em> parameters are arrays, meaning tha multiple entries can be defined.</p>
+                          <p>Note: Every <em>vocabulary</em> parameter must be paired with <em>terms</em> parameter, i.e. having 2 <em>vocabulary</em> parameters and 3 <em>terms</em> parameters will result in error.</p>
+                          <p>Note: Multiple <em>vocabulary</em> and <em>terms</em> parameter entries create a request where the resulting nodes must contain at least one term from each vocabulary.</p>
+                          <p>Note: Multiple values in the <em>terms</em> param must be delimited by comma ','.</p>
+                      </div>
+                      <div class="response">
+                          <p class="title"><strong>Response:</strong></p>
+                        <pre>{
+    "status": {type: Boolean},
+    "message": {type: String},
+    "items": {type: Array}
+}</pre>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!-- /content/related END -->
+
     <!-- /menu -->
     <div class="operation">
         <h3>/menu</h3>
@@ -735,5 +772,76 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
 
     </div>
     <!-- /files END -->
+
+    <!-- /taxonomy/terms -->
+    <div class="operation">
+        <h3>/taxonomy/terms/{vocabulary}/{content_type}/{query}</h3>
+        <div class="operation-methods">
+            <div class="operation-method get">
+                <div class="heading">
+                    <p><strong><span class="method">GET</span> /taxonomy/terms/{vocabulary}/{content_type}/{query}</strong> <em>Fetch terms for a given vocabulary in a certain content type based on a search query.</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <div class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>/taxonomy/terms/{vocabulary}/{content_type}/{query}</pre>
+                        </div>
+                        <div class="example">
+                            <p class="title"><strong>Example:</strong></p>
+                            <input type="text" readonly="readonly" value="/taxonomy/terms/field_ding_news_category/ding_news/a?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
+                            <p>Note: The <em>query</em> parameter accepts regular expressions.</p>
+                        </div>
+                        <div class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array}
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /taxonomy/terms END -->
+
+    <!-- /taxonomy/vocabularies -->
+    <div class="operation">
+        <h3>/taxonomy/vocabularies/{content_type}</h3>
+        <div class="operation-methods">
+            <div class="operation-method get">
+                <div class="heading">
+                    <p><strong><span class="method">GET</span> /taxonomy/vocabularies/{content_type}</strong> <em>Fetch vocabularies for a given content type.</em></p>
+                </div>
+                <div class="method-doc">
+                    <div class="doc-row">
+                        <div class="request">
+                            <p class="title"><strong>Request:</strong></p>
+                            <pre>/taxonomy/vocabularies/{content_type}?agency={type: String, Required}&key={type: String, Required}</pre>
+                        </div>
+                        <div class="example">
+                            <p class="title"><strong>Example:</strong></p>
+                            <input type="text" readonly="readonly" value="/taxonomy/vocabularies/ding_news?agency=100000&key=b11f8f062416fcbd7348ac39ca78e78b3b740cdf" />
+                        </div>
+                        <div class="response">
+                            <p class="title"><strong>Response:</strong></p>
+                            <pre>{
+  "status": {type: Boolean},
+  "message": {type: String},
+  "items": {type: Array, Not used}
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /taxonomy/vocabularies END -->
+
+
   </div>
 {% endblock %}
