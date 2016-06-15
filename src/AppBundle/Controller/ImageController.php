@@ -27,9 +27,11 @@ class ImageController extends Controller
     );
 
     /**
-     * @Route("/files/{agency}/{filename}")
+     * @Route("/files/{agency}/{resize}/{filename}", defaults={"resize":"original"}, requirements={
+     *      "resize":"original|\d{1,4}x\d{1,4}"
+     * })
      */
-    function imageAction(Request $request, $agency, $filename)
+    function imageAction(Request $request, $agency, $resize, $filename)
     {
         // For those weird instances that lack GD extension.
         if (!extension_loaded('gd')) {
@@ -39,7 +41,6 @@ class ImageController extends Controller
         $this->response = new Response();
 
         $filePath = $this->filesStorageDir . '/' . $agency . '/' . $filename;
-        $resize = $request->query->get('resize');
 
         $dimensions = $this->getSizeFromParam($resize);
         // If resize parameter is received, try parse it and apply the style to
@@ -171,6 +172,9 @@ class ImageController extends Controller
         try {
             $file = new File($path);
             $this->response->headers->set('Content-Type', $file->getMimeType());
+            $this->response->headers->set('Cache-Control', 'max-age=86400, public');
+            $this->response->headers->set('Expires', gmdate(DATE_RFC1123, time() + 86400));
+
             $this->response->setStatusCode(Response::HTTP_OK);
             $this->response->setContent(file_get_contents($path));
         } catch (FileNotFoundException $e) {
