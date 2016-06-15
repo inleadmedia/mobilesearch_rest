@@ -742,24 +742,23 @@ $key = sha1($agencyId . $agencyKey); // 952933c6ef9962f26e919f05637bb7e6061f064f
 
     <!-- /files -->
     <div class="operation">
-        <h3>/files/{agency}/{filename}</h3>
+        <h3>/files/{agency}/{resize}/{filename}</h3>
         <div class="operation-methods">
             <div class="operation-method get">
                 <div class="heading">
-                    <p><strong><span class="method">GET</span> /files/{agency}/{filename}</strong> <em>Fetch an image asset (optionally resized)</em></p>
+                    <p><strong><span class="method">GET</span> /files/{agency}/{resize}/{filename}</strong> <em>Fetch an image asset (optionally resized)</em></p>
                 </div>
                 <div class="method-doc">
                     <div class="doc-row">
                         <div class="request">
                             <p class="title"><strong>Request:</strong></p>
-                            <pre>/files/{agency}/{filename}?resize={type: String}</pre>
-                            <p>Note: If <em>resize</em> parameter is ommitted the original image is served.</p>
-                            <p>Note: <em>resize</em> parameter must maintain the following structure: <em>WIDTHxHEIGHT</em></p>
-                            <p>Note: Resulted image aspect ratio is preserved. If requested size differs from original aspect ratio, the image is scaled and cropped at the center.</p>
+                            <pre>/files/{agency}/{resize}/{filename}</pre>
+                            <p>Note: <em>resize</em> parameter can be either <em>original</em> or match the pattern: <em>WxH</em></p>
+                            <p>Note: After resize the image aspect ratio is preserved. If requested size differs from original aspect ratio, the image is scaled and cropped from <strong>top</strong> edge.</p>
                         </div>
                         <div class="example">
                             <p class="title"><strong>Example:</strong></p>
-                            <input type="text" readonly="readonly" value="/files/100000/f623904c5b082f97ea2134bab94af6e2745e0ac3.jpeg?resize=1280x720" />
+                            <input type="text" readonly="readonly" value="/files/100000/1280x720/f623904c5b082f97ea2134bab94af6e2745e0ac3.jpeg" />
                         </div>
                         <div class="response">
                             <p class="title"><strong>Response:</strong></p>

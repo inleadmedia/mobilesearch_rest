@@ -13,10 +13,8 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
-
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
-
 
 class ImageController extends Controller
 {
@@ -25,13 +23,15 @@ class ImageController extends Controller
     protected $response;
     protected $imagineOptions = array(
         'jpeg_quality' => 95,
-        'png_compression_level' => 2,
+        'png_compression_level' => 2
     );
 
     /**
-     * @Route("/files/{agency}/{filename}")
+     * @Route("/files/{agency}/{resize}/{filename}", defaults={"resize":"original"}, requirements={
+     *      "resize":"original|\d{1,4}x\d{1,4}"
+     * })
      */
-    function imageAction(Request $request, $agency, $filename)
+    function imageAction(Request $request, $agency, $resize, $filename)
     {
         // For those weird instances that lack GD extension.
         if (!extension_loaded('gd')) {
@@ -41,7 +41,6 @@ class ImageController extends Controller
         $this->response = new Response();
 
         $filePath = $this->filesStorageDir . '/' . $agency . '/' . $filename;
-        $resize = $request->query->get('resize');
 
         $dimensions = $this->getSizeFromParam($resize);
         // If resize parameter is received, try parse it and apply the style to
@@ -54,9 +53,7 @@ class ImageController extends Controller
             // was created - replace the filepath with the result image.
             if ($fs->exists($resizedFilePath)) {
                 $filePath = $resizedFilePath;
-            }
-            elseif ($this->resizeImage($filePath, $resizedFilePath, $dimensions))
-            {
+            } elseif ($this->resizeImage($filePath, $resizedFilePath, $dimensions)) {
                 $filePath = $resizedFilePath;
             }
         }
@@ -70,35 +67,29 @@ class ImageController extends Controller
      * Resizes and saves images.
      *
      * @param string $source
-     *   Original image path.
+     *        Original image path.
      * @param unknown $target
-     *   Target path for resized images.
+     *        Target path for resized images.
      * @param array $wantedDimensions
-     *   Desired width and height.
+     *        Desired width and height.
      */
     protected function resizeImage($source, $target, array $wantedDimensions)
     {
         $imagine = new Imagine();
-        try
-        {
+        try {
             $image = $imagine->open($source);
             $imageSize = $image->getSize();
             $originalSize = array(
                 'width' => $imageSize->getWidth(),
-                'height' => $imageSize->getHeight(),
+                'height' => $imageSize->getHeight()
             );
             $imageManipulations = $this->getResizeDimensions($originalSize, $wantedDimensions);
-            $image
-                ->resize($imageManipulations['resize'])
+            $image->resize($imageManipulations['resize'])
                 ->crop($imageManipulations['crop'], $imageManipulations['final_size'])
                 ->save($target, $this->imagineOptions);
-        }
-        catch(ImagineExc $e)
-        {
+        } catch (ImagineExc $e) {
             return FALSE;
-        }
-        catch (ImagineArgExc $e)
-        {
+        } catch (ImagineArgExc $e) {
             return FALSE;
         }
 
@@ -115,20 +106,19 @@ class ImageController extends Controller
      * side and cropped from the center of the image.
      *
      * @param array $originalSize
-     *   Original image size (width and height).
+     *        Original image size (width and height).
      * @param array $targetSize
-     *   Desired target size (width and height).
+     *        Desired target size (width and height).
      *
-     * @return array
-     *   A set of instructions needed to be applied to original image.
-     *   - resize: size of the image to crop from (Box object).
-     *   - crop: coordinates where to crop the image (Point object).
-     *   - final_size: Requested image size dimensions.
+     * @return array A set of instructions needed to be applied to original image.
+     *         - resize: size of the image to crop from (Box object).
+     *         - crop: coordinates where to crop the image (Point object).
+     *         - final_size: Requested image size dimensions.
      */
     protected function getResizeDimensions(array $originalSize, array $targetSize)
     {
-        list($originalWidth, $originalHeight) = array_values($originalSize);
-        list($targetWidth, $targetHeight) = array_values($targetSize);
+        list ($originalWidth, $originalHeight) = array_values($originalSize);
+        list ($targetWidth, $targetHeight) = array_values($targetSize);
         // Calculate the aspect ratios of original and target sizes.
         $originalAspect = round($originalWidth / $originalHeight, self::ASPECT_PRECISION);
         $targetAspect = round($targetWidth / $targetHeight, self::ASPECT_PRECISION);
@@ -140,8 +130,7 @@ class ImageController extends Controller
 
         // If the aspect ratios do not match, means that
         // the image must be adjusted to maintain adequate proportions.
-        if ($originalAspect != $targetAspect)
-        {
+        if ($originalAspect != $targetAspect) {
             // Get the smallest side of the image.
             // This is required to calculate target resize of the
             // image to crop from, so at least one side fits.
@@ -157,12 +146,16 @@ class ImageController extends Controller
             // Get the coordinates where from to crop the final portion.
             // This one crops from the center of the resized image.
             $crop_x = $box_width / 2 - $targetWidth / 2;
-            $crop_y = 0; //$box_height / 2 - $targetHeight / 2;
+            $crop_y = 0; // $box_height / 2 - $targetHeight / 2;
 
             $cropPoint = new Point($crop_x, $crop_y);
         }
 
-        return array('resize' => $resizeBox, 'crop' => $cropPoint, 'final_size' => $finalImageSize);
+        return array(
+            'resize' => $resizeBox,
+            'crop' => $cropPoint,
+            'final_size' => $finalImageSize
+        );
     }
 
     /**
@@ -172,19 +165,19 @@ class ImageController extends Controller
      * Adequate headers are passed as well.
      *
      * @param string $path
-     *   Image path.
+     *        Image path.
      */
     protected function serveImage($path)
     {
-        try
-        {
+        try {
             $file = new File($path);
             $this->response->headers->set('Content-Type', $file->getMimeType());
+            $this->response->headers->set('Cache-Control', 'max-age=86400, public');
+            $this->response->headers->set('Expires', gmdate(DATE_RFC1123, time() + 86400));
+
             $this->response->setStatusCode(Response::HTTP_OK);
             $this->response->setContent(file_get_contents($path));
-        }
-        catch (FileNotFoundException $e)
-        {
+        } catch (FileNotFoundException $e) {
             $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
             $this->response->setContent('File not found.');
         }
@@ -195,14 +188,13 @@ class ImageController extends Controller
      * are stored.
      *
      * @param string $name
-     *   File name.
+     *        File name.
      * @param string $agency
-     *   Agency id.
+     *        Agency id.
      * @param boolean $create
-     *   Whether to create the directories.
+     *        Whether to create the directories.
      *
-     * @return boolean
-     *   TRUE if directory exists or created, FALSE otherwise.
+     * @return boolean TRUE if directory exists or created, FALSE otherwise.
      */
     protected function checkThumbnailSubdir($name, $agency, $create = TRUE)
     {
@@ -211,13 +203,10 @@ class ImageController extends Controller
         $exists = $fs->exists($path);
 
         if (!$exists && $create) {
-            try
-            {
+            try {
                 $fs->mkdir($path);
                 $exists = TRUE;
-            }
-            catch (IOException $e)
-            {
+            } catch (IOException $e) {
                 return FALSE;
             }
         }
@@ -231,10 +220,9 @@ class ImageController extends Controller
      * The parameter must be in form WIDTHxHEIGHT.
      *
      * @param string $resizeParam
-     *   Query string resize parameter.
+     *        Query string resize parameter.
      *
-     * @return array
-     *   Required width and height of the image.
+     * @return array Required width and height of the image.
      */
     protected function getSizeFromParam($resizeParam)
     {
@@ -243,7 +231,7 @@ class ImageController extends Controller
         if (!empty($resizeParam) && preg_match('/^(\d+)x(\d+)$/', $resizeParam, $sizes)) {
             $dimensions = array(
                 'width' => (int) $sizes[1],
-                'height' => (int) $sizes[2],
+                'height' => (int) $sizes[2]
             );
         }
 
