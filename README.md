@@ -1,13 +1,14 @@
 MobileSearch RESTful API
 =====================
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inleadmedia/mobilesearch_rest/build-status/master)
+[![GitHub tag](https://img.shields.io/github/tag/filmstriben/mobilesearch_rest.svg?style=flat-square)](https://github.com/filmstriben/mobilesearch_rest)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/filmstriben/mobilesearch_rest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/filmstriben/mobilesearch_rest/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/filmstriben/mobilesearch_rest/badges/build.png?b=master)](https://scrutinizer-ci.com/g/filmstriben/mobilesearch_rest/build-status/master)
 
 Documentation
 -------------
 
-[Read the Documentation](http://am.fs_rest.dev.inlead.dk/web/)
+[Read the Documentation](http://rest.filmstriben.dk/web/)
 
 Requirements
 ------------
