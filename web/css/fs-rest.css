@@ -1,4 +1,6 @@
 * {
+  font-family: arial, tahoma;
+  font-size: 14px;
   margin: 0;
   padding: 0;
 }
@@ -6,11 +8,27 @@
 body {
   padding: 10px;
 }
+
+.example {
+  margin: 5px 0;
+}
+
+input,
+textarea,
+.operation,
+.operation-method,
 .doc-row,
 pre {
-  border: 1px solid gray;
+  border: 1px solid #CCC;
   border-radius: 5px;
   padding: 5px;
+}
+
+input,
+pre,
+textarea {
+  overflow: scroll;
+  font-family: courier;
 }
 
 .operations-doc {
@@ -18,12 +36,17 @@ pre {
   width: 1050px;
 }
 
+.operation:hover {
+  background-color: #FFD;
+}
+
+.operation,
 .operation-method {
   margin-bottom: 10px;
 }
 
-.operation h3 {
-  text-decoration: underline;
+.title {
+  font-style: italic;
 }
 
 .operation h3,
@@ -49,4 +72,42 @@ pre {
 .operation-methods,
 .method-doc {
   padding-left: 20px;
+}
+
+.doc-row {
+  background-color: #fff;
+}
+
+.operation-methods,
+.doc-row {
+  margin-top: 10px;
+}
+
+.operation-method.put:hover {
+  background-color: #e6ffcc;
+}
+.operation-method.put .method {
+  background-color: green;
+}
+
+.operation-method.post:hover {
+  background-color: #ffe6cc;
+}
+.operation-method.post .method {
+  background-color: orange;
+}
+.operation-method.delete:hover {
+  background-color: #ffcccc;
+}
+.operation-method.delete .method {
+  background-color: red;
+}
+
+input,
+textarea {
+  width: 99%;
+}
+
+textarea {
+  height:200px;
 }
