@@ -22,8 +22,6 @@ if (isset($_SERVER['REQUEST_URI'])) {
 if (!isset($port)) {
     exit;
 }
-echo 'http://146.192.168.164:'.$port.'/'.$node_uri.'<br><br>';
-exit;
 
 // build the individual requests, but do not execute them
 $node_1 = curl_init('http://146.192.168.164:'.$port.'/'.$node_uri);
