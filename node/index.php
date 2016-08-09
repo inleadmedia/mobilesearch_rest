@@ -26,7 +26,7 @@ if (!isset($port)) {
 // build the individual requests, but do not execute them
 $node_1 = curl_init('http://146.192.168.164:'.$port.'/'.$node_uri);
 $node_2 = curl_init('http://146.192.168.165:'.$port.'/'.$node_uri);
-$node_3 = curl_init('http://146.192.168.165:'.$port.'/'.$node_uri);
+$node_3 = curl_init('http://146.192.168.166:'.$port.'/'.$node_uri);
 curl_setopt($node_1, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($node_2, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($node_3, CURLOPT_RETURNTRANSFER, true);
