@@ -60,7 +60,6 @@ final class RestController extends Controller
         if ($this->lastMethod == 'GET') {
             $fields = array(
                 'agency' => null,
-                'key' => null,
                 'amount' => null,
                 'sort' => null,
                 'order' => null,
@@ -77,8 +76,8 @@ final class RestController extends Controller
             $em = $this->get('doctrine_mongodb');
             $rcr = new RestContentRequest($em);
 
-            if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
-                $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+            if (empty($fields['agency'])) {
+                $this->lastMessage = 'Failed validating request. Check if agency is set.';
             }
             elseif (!empty($fields['node']))
             {
@@ -141,7 +140,6 @@ final class RestController extends Controller
         if ($this->lastMethod == 'GET') {
             $fields = array(
               'agency' => null,
-              'key' => null,
               'field' => null,
               'query' => null,
             );
@@ -153,9 +151,10 @@ final class RestController extends Controller
             $em = $this->get('doctrine_mongodb');
             $rcr = new RestContentRequest($em);
 
-            if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
-                $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
-            } elseif (!empty($fields['query'])) {
+            if (empty($fields['agency'])) {
+                $this->lastMessage = 'Failed validating request. Check if agency is set.';
+            }
+            elseif (!empty($fields['query'])) {
                 $this->lastItems = array();
 
                 $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
@@ -217,8 +216,7 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
 
         $fields = array(
-            'agency' => null,
-            'key' => null
+            'agency' => null
         );
 
         foreach (array_keys($fields) as $field) {
@@ -228,8 +226,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rtr = new RestTaxonomyRequest($em);
 
-        if (!$rtr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         }
         else {
             $vocabularies = $rtr->fetchVocabularies($fields['agency'], $contentType);
@@ -254,8 +252,7 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
 
         $fields = array(
-            'agency' => null,
-            'key' => null
+            'agency' => null
         );
 
         foreach (array_keys($fields) as $field) {
@@ -265,8 +262,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rtr = new RestTaxonomyRequest($em);
 
-        if (!$rtr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         }
         else {
             $suggestions = $rtr->fetchTermSuggestions($fields['agency'], $vocabulary, $contentType, $query);
@@ -292,7 +289,6 @@ final class RestController extends Controller
 
         $fields = array(
             'agency' => null,
-            'key' => null,
             'vocabulary' => null,
             'terms' => null
         );
@@ -304,8 +300,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rtr = new RestTaxonomyRequest($em);
 
-        if (!$rtr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         }
         else {
             $items = $rtr->fetchRelatedContent($fields['agency'], (array) $fields['vocabulary'], (array) $fields['terms']);
