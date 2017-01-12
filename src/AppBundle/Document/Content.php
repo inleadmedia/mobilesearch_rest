@@ -18,17 +18,17 @@ class Content
     protected $id;
 
     /**
-     * @MongoDB\int
+     * @MongoDB\Field(type="int")
      */
     protected $nid;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agency;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $type;
 

@@ -18,32 +18,32 @@ class Menu
     protected $id;
 
     /**
-     * @MongoDB\int
+     * @MongoDB\Field(type="int")
      */
     protected $mlid;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agency;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $type;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $url;
 
     /**
-     * @MongoDB\int
+     * @MongoDB\Field(type="int")
      */
     protected $order;
 

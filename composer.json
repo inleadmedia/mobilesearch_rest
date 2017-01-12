@@ -18,9 +18,15 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "doctrine/mongodb-odm": "1.0.4",
-        "doctrine/mongodb-odm-bundle": "3.0.1",
-        "imagine/imagine": "~0.5.0"
+        "imagine/imagine": "~0.5.0",
+        "ext-mongodb": ">=1.1.2",
+        "doctrine/mongodb-odm-bundle": "dev-master",
+        "alcaeus/mongo-php-adapter": "dev-composer-provide",
+        "mongodb/mongodb": "@beta",
+        "doctrine/mongodb": "dev-master"
+    },
+    "provide": {
+        "ext-mongo": "1.6.12"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

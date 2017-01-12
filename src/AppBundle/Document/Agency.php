@@ -18,17 +18,17 @@ class Agency
     protected $id;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agencyId;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $key;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 

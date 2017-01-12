@@ -18,22 +18,22 @@ class Lists
     protected $id;
 
     /**
-     * @MongoDB\int
+     * @MongoDB\Field(type="int")
      */
     protected $nid;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agency;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $key;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 
@@ -43,17 +43,17 @@ class Lists
     protected $nids;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $type;
 
     /**
-     * @MongoDB\boolean
+     * @MongoDB\Field(type="boolean")
      */
     protected $promoted;
 
     /**
-     * @MongoDB\integer
+     * @MongoDB\Field(type="int")
      */
     protected $weight;
 
