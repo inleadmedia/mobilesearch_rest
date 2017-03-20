@@ -290,15 +290,20 @@ final class RestController extends Controller
     {
         $this->lastMethod = $request->getMethod();
 
+        // Defaults.
         $fields = array(
-            'agency' => null,
-            'key' => null,
-            'vocabulary' => null,
-            'terms' => null
+          'agency' => null,
+          'key' => null,
+          'vocabulary' => null,
+          'terms' => null,
+          'sort' => null,
+          'order' => 'DESC',
+          'amount' => 10,
+          'skip' => 0,
         );
 
         foreach (array_keys($fields) as $field) {
-            $fields[$field] = $request->query->get($field);
+            $fields[$field] = !empty($request->query->get($field)) ? $request->query->get($field) : $fields[$field];
         }
 
         $em = $this->get('doctrine_mongodb');
@@ -308,19 +313,21 @@ final class RestController extends Controller
             $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
         }
         else {
-            $items = $rtr->fetchRelatedContent($fields['agency'], (array) $fields['vocabulary'], (array) $fields['terms']);
+            unset($fields['key']);
+            $items = call_user_func_array(array($rtr, 'fetchRelatedContent'), $fields);
+
             $this->lastItems = array();
 
             if (!empty($items)) {
                 foreach ($items as $item) {
                     $this->lastItems[] = array(
-                        'id' => $item->getId(),
-                        'nid' => $item->getNid(),
-                        'agency' => $item->getAgency(),
-                        'type' => $item->getType(),
-                        'fields' => $item->getFields(),
-                        'taxonomy' => $item->getTaxonomy(),
-                        'list' => $item->getList()
+                      'id' => $item->getId(),
+                      'nid' => $item->getNid(),
+                      'agency' => $item->getAgency(),
+                      'type' => $item->getType(),
+                      'fields' => $item->getFields(),
+                      'taxonomy' => $item->getTaxonomy(),
+                      'list' => $item->getList(),
                     );
                 }
             }
@@ -369,6 +376,8 @@ final class RestController extends Controller
 
         $response = new Response(json_encode($responseContent));
         $response->headers->set('Content-Type', 'application/json');
+        $response->setSharedMaxAge(600);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
 
         return $response;
     }
