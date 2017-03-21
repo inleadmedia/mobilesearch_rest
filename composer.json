@@ -23,7 +23,8 @@
         "doctrine/mongodb-odm-bundle": "dev-master",
         "alcaeus/mongo-php-adapter": "dev-composer-provide",
         "mongodb/mongodb": "@beta",
-        "doctrine/mongodb": "dev-master"
+        "doctrine/mongodb": "dev-master",
+        "nelmio/api-doc-bundle": "^2.13"
     },
     "provide": {
         "ext-mongo": "1.6.12"
