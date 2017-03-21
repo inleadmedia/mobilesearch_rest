@@ -46,7 +46,7 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchFiltered($agency, $node = null, $amount = 10, $skip = 0, $sort = '', $dir = '', $type = null, array $vocabulary = null, array $terms = null)
+    public function fetchFiltered($agency, $node = null, $amount = 10, $skip = 0, $sort = '', $dir = '', $type = null, array $vocabulary = null, array $terms = null, $upcoming = 0)
     {
         if (!empty($node)) {
             return $this->fetchContent(explode(',', $node), $agency);
@@ -74,6 +74,12 @@ class RestContentRequest extends RestBaseRequest
         foreach ($vocabulary as $k => $item) {
             $field = 'taxonomy.' . $item . '.terms';
             $criteria[$field] = array('$in' => explode(',', $terms[$k]));
+        }
+
+        if ($type == 'ding_event' && $upcoming) {
+            $criteria['fields.field_ding_event_date.value.to'] = array(
+              '$gte' => date('Y-m-d H:i:s', time()),
+            );
         }
 
         $content = $this->em

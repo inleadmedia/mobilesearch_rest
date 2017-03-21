@@ -107,17 +107,23 @@ final class RestController extends Controller
      *      "description"="Only fetch specific node types."
      *    },
      *    {
-     *       "name"="vocabulary",
+     *       "name"="vocabulary[]",
      *       "dataType"="string",
      *       "description"="Vocabulary name. Can be multiple, e.g.: vocabulary[]='a'&vocabulary[]='b'.",
-     *       "required"=true
+     *       "required"=false
      *     },
      *     {
-     *       "name"="terms",
+     *       "name"="terms[]",
      *       "dataType"="string",
      *       "description"="Term name. Can be multiple, e.g.: terms[]='a'&terms[]='b'. The count of 'terms' key in the query string MUST match the count of 'vocabulary' keys.",
-     *       "required"=true
+     *       "required"=false
      *     },
+     *     {
+     *       "name"="upcoming",
+     *       "dataType"="boolean",
+     *       "description"="Fetch only upcoming events. Viable when 'type=ding_event'.",
+     *       "required"=false
+     *     }
      *  }
      * )
      * @Route("/content/fetch")
@@ -127,17 +133,19 @@ final class RestController extends Controller
     {
         $this->lastMethod = $request->getMethod();
 
+        // Defaults.
         $fields = array(
           'agency' => null,
           'key' => null,
           'node' => null,
           'amount' => 10,
           'skip' => 0,
-          'sort' => '',
-          'order' => 'ASC',
+          'sort' => 'fields.created.value',
+          'order' => 'DESC',
           'type' => null,
           'vocabulary' => array(),
           'terms' => array(),
+          'upcoming' => 0,
         );
 
         foreach (array_keys($fields) as $field) {
