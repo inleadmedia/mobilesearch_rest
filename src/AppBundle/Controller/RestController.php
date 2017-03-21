@@ -455,6 +455,13 @@ final class RestController extends Controller
      *      "description"="Order of sorting. Either ascending - 'ASC', or descending - 'DESC'. Defaults to descending."
      *    },
      *    {
+     *      "name"="amount",
+     *      "dataType"="integer",
+     *      "required"=false,
+     *      "format"="\d+",
+     *      "description"="Fetch a certain number of nodes."
+     *    },
+     *    {
      *      "name"="skip",
      *      "dataType"="integer",
      *      "required"=false,
