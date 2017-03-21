@@ -85,33 +85,4 @@ class RestTaxonomyRequest extends RestBaseRequest
 
         return $terms;
     }
-
-    public function fetchRelatedContent($agency, array $vocabulary, array $terms, $sort = '', $dir = 'DESC', $amount = 10, $skip = 0)
-    {
-        if (count($vocabulary) != count($terms)) {
-            throw new \Exception('Number of vocabulary and terms count mismatch.');
-        }
-
-        $criteria = array(
-            'agency' => $agency,
-        );
-
-        foreach ($vocabulary as $k => $item) {
-            $field = 'taxonomy.' . $item . '.terms';
-            $criteria[$field] = array('$in' => explode(',', $terms[$k]));
-        }
-
-        $order = array();
-        if ($sort && $dir) {
-            $order = array(
-              $sort => $dir,
-            );
-        }
-
-        $content = $this->em
-          ->getRepository('AppBundle:Content')
-          ->findBy($criteria, $order, (int) $amount, (int) $skip);
-
-        return $content;
-    }
 }
