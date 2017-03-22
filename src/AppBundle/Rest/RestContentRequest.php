@@ -5,6 +5,7 @@
 
 namespace AppBundle\Rest;
 
+use AppBundle\Exception\RestException;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
@@ -45,10 +46,14 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchXAmount($agency, $amount = 10, $sort = 'nid', $dir = 'DESC', $type = NULL, $skip = 0)
+    public function fetchFiltered($agency, $node = null, $amount = 10, $skip = 0, $sort = '', $dir = '', $type = null, array $vocabulary = null, array $terms = null, $upcoming = 0)
     {
+        if (!empty($node)) {
+            return $this->fetchContent(explode(',', $node), $agency);
+        }
+
         $criteria = array(
-            'agency' => $agency,
+          'agency' => $agency,
         );
 
         $order = array();
@@ -62,21 +67,62 @@ class RestContentRequest extends RestBaseRequest
           $criteria['type'] = $type;
         }
 
+        if (count($vocabulary) != count($terms)) {
+            throw new RestException('Number of vocabulary and terms count mismatch.');
+        }
+
+        foreach ($vocabulary as $k => $item) {
+            $field = 'taxonomy.' . $item . '.terms';
+            $criteria[$field] = array('$in' => explode(',', $terms[$k]));
+        }
+
+        if ($type == 'ding_event' && $upcoming) {
+            $criteria['fields.field_ding_event_date.value.to'] = array(
+              '$gte' => date('Y-m-d H:i:s', time()),
+            );
+        }
+
         $content = $this->em
-            ->getRepository('AppBundle:Content')
-            ->findBy($criteria, $order, (int) $amount, (int) $skip);
+          ->getRepository('AppBundle:Content')
+          ->findBy($criteria, $order, (int) $amount, (int) $skip);
 
         return $content;
     }
 
     public function fetchSuggestions($agency, $query, $field = 'fields.title.value')
     {
-        $content = $this->em->getRepository('AppBundle:Content')->findBy(array(
-            $field => new \MongoRegex('/' . $query . '/i'),
-            'agency' => $agency
-        ));
+        $content = $this->em->getRepository('AppBundle:Content')->findBy(
+          array(
+            $field => new \MongoRegex('/'.$query.'/i'),
+            'agency' => $agency,
+          )
+        );
 
         return $content;
+    }
+
+    public function fetchContent(array $ids, $agency)
+    {
+        if (empty($ids)) {
+            return array();
+        }
+
+        // Mongo has strict type check, and since 'nid' is stored as int
+        // convert the value to int as well.
+        array_walk($ids, function(&$v) {
+            $v = (int)$v;
+        });
+
+        $criteria = array(
+          'agency' => $agency,
+          'nid' => array('$in' => $ids),
+        );
+
+        $entities = $this->em
+          ->getRepository('AppBundle:Content')
+          ->findBy($criteria);
+
+        return $entities;
     }
 
     protected function insert()
@@ -110,24 +156,6 @@ class RestContentRequest extends RestBaseRequest
         $dm->flush();
 
         return $entity;
-    }
-
-    public function fetchContent(array $ids, $agency)
-    {
-        $entities = array();
-
-        foreach ($ids as $id) {
-            if (!is_numeric($id)) {
-                continue;
-            }
-
-            $entity = $this->get((int) $id, $agency);
-            if ($entity) {
-                $entities[] = $entity;
-            }
-        }
-
-        return $entities;
     }
 
     public function prepare(FSContent $content)
