@@ -213,26 +213,23 @@ final class RestController extends Controller
             $fields[$field] = $request->query->get($field);
         }
 
-            $em = $this->get('doctrine_mongodb');
-            $rcr = new RestContentRequest($em);
+        $em = $this->get('doctrine_mongodb');
+        $rcr = new RestContentRequest($em);
 
-            if (empty($fields['agency'])) {
-                $this->lastMessage = 'Failed validating request. Check if agency is set.';
-            } elseif (!empty($fields['query'])) {
-                $this->lastItems = array();
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
+        } elseif (!empty($fields['query'])) {
+            $this->lastItems = array();
 
-                $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
-                foreach ($suggestions as $suggestion) {
-                    $fields = $suggestion->getFields();
-                    $this->lastItems[] = array(
-                      'id' => $suggestion->getId(),
-                      'nid' => $suggestion->getNid(),
-                      'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
-                      'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
-                    );
-                }
-
-                $this->lastStatus = true;
+            $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
+            foreach ($suggestions as $suggestion) {
+                $fields = $suggestion->getFields();
+                $this->lastItems[] = array(
+                  'id' => $suggestion->getId(),
+                  'nid' => $suggestion->getNid(),
+                  'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
+                  'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
+                );
             }
 
             $this->lastStatus = true;
