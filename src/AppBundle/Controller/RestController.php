@@ -158,24 +158,25 @@ final class RestController extends Controller
         if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
             $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
         }
+        else {
+            unset($fields['key']);
+            $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
 
-        unset($fields['key']);
-        $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
+            if (!empty($items)) {
+                foreach ($items as $item) {
+                    $this->lastItems[] = array(
+                      'id' => $item->getId(),
+                      'nid' => $item->getNid(),
+                      'agency' => $item->getAgency(),
+                      'type' => $item->getType(),
+                      'fields' => $item->getFields(),
+                      'taxonomy' => $item->getTaxonomy(),
+                      'list' => $item->getList(),
+                    );
+                }
 
-        if (!empty($items)) {
-            foreach ($items as $item) {
-                $this->lastItems[] = array(
-                  'id' => $item->getId(),
-                  'nid' => $item->getNid(),
-                  'agency' => $item->getAgency(),
-                  'type' => $item->getType(),
-                  'fields' => $item->getFields(),
-                  'taxonomy' => $item->getTaxonomy(),
-                  'list' => $item->getList(),
-                );
+                $this->lastStatus = true;
             }
-
-            $this->lastStatus = true;
         }
 
         return $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastItems);
