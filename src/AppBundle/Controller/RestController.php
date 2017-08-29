@@ -164,15 +164,47 @@ final class RestController extends Controller
 
             if (!empty($items)) {
                 foreach ($items as $item) {
-                    $this->lastItems[] = array(
-                      'id' => $item->getId(),
-                      'nid' => $item->getNid(),
-                      'agency' => $item->getAgency(),
-                      'type' => $item->getType(),
-                      'fields' => $item->getFields(),
+                    $itemFields = $item->getFields();
+                    if (isset($itemFields['field_ding_event_date'])) {
+                        $timeZone = new \DateTimeZone('Europe/Copenhagen');
+                        $dt = new \DateTime();
+
+                        // Since the field value can be pushed without any
+                        // validation, the values might be way different from
+                        // what is expected.
+                        // Therefore make sure that this part doesn't fail on
+                        // weird input.
+                        try {
+                            if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
+                                $dt->setTimestamp(
+                                  $itemFields['field_ding_event_date']['value']['from']
+                                );
+                                $dt->setTimezone($timeZone);
+                                $itemFields['field_ding_event_date']['value']['from'] = $dt->format('c');
+                            }
+
+                            if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
+                                $dt->setTimestamp(
+                                  $itemFields['field_ding_event_date']['value']['to']
+                                );
+                                $dt->setTimezone($timeZone);
+                                $itemFields['field_ding_event_date']['value']['to'] = $dt->format('c');
+                            }
+                        }
+                        catch (\Exception $e) {
+                            // Do nothing.
+                        }
+                    }
+
+                    $this->lastItems[] = [
+                      'id'       => $item->getId(),
+                      'nid'      => $item->getNid(),
+                      'agency'   => $item->getAgency(),
+                      'type'     => $item->getType(),
+                      'fields'   => $itemFields,
                       'taxonomy' => $item->getTaxonomy(),
-                      'list' => $item->getList(),
-                    );
+                      'list'     => $item->getList(),
+                    ];
                 }
 
                 $this->lastStatus = true;
