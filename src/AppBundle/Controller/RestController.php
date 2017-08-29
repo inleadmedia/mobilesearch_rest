@@ -162,38 +162,35 @@ final class RestController extends Controller
             unset($fields['key']);
             $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
 
+            $restHelper = $this->container->get('rest.helper');
             if (!empty($items)) {
                 foreach ($items as $item) {
                     $itemFields = $item->getFields();
-                    if (isset($itemFields['field_ding_event_date'])) {
-                        $timeZone = new \DateTimeZone('Europe/Copenhagen');
-                        $dt = new \DateTime();
-
-                        // Since the field value can be pushed without any
-                        // validation, the values might be way different from
-                        // what is expected.
-                        // Therefore make sure that this part doesn't fail on
-                        // weird input.
-                        try {
-                            if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
-                                $dt->setTimestamp(
-                                  $itemFields['field_ding_event_date']['value']['from']
-                                );
-                                $dt->setTimezone($timeZone);
-                                $itemFields['field_ding_event_date']['value']['from'] = $dt->format('c');
-                            }
-
-                            if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
-                                $dt->setTimestamp(
-                                  $itemFields['field_ding_event_date']['value']['to']
-                                );
-                                $dt->setTimezone($timeZone);
-                                $itemFields['field_ding_event_date']['value']['to'] = $dt->format('c');
-                            }
+                    // Attempt to parse fields that contain dates.
+                    // Since the field value can be pushed without any
+                    // validation, the values might be way different from
+                    // what is expected.
+                    // Therefore make sure that this part doesn't fail on
+                    // weird input.
+                    try {
+                        if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
+                            $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['from']);
                         }
-                        catch (\Exception $e) {
-                            // Do nothing.
+
+                        if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
+                            $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['to']);
                         }
+
+                        if (!empty($itemFields['created']['value'])) {
+                            $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
+                        }
+
+                        if (!empty($itemFields['changed']['value'])) {
+                            $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
+                        }
+                    }
+                    catch (RestException $e) {
+                        // Do nothing.
                     }
 
                     $this->lastItems[] = [
