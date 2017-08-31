@@ -200,6 +200,7 @@ class RestContentRequest extends RestBaseRequest
         'field_ding_news_list_image',
         'field_ding_page_title_image',
         'field_ding_page_list_image',
+        'field_easyscreen_image',
       );
       foreach ($fields as $field_name => &$field_value) {
         if (in_array($field_name, $image_fields)) {
