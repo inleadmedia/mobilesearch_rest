@@ -58,12 +58,6 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "requirement"="\d+",
      *       "description"="Agency number, owner of the content."
-     *    },
-     *    {
-     *       "name"="key",
-     *       "dataType"="string",
-     *       "description"="Unique hash for authentication. Built by using sha1 hash on a string of agency and secret key.",
-     *       "requirement"="[a-f0-9]+"
      *    }
      *  },
      *  filters={
@@ -136,7 +130,6 @@ final class RestController extends Controller
         // Defaults.
         $fields = array(
           'agency' => null,
-          'key' => null,
           'node' => null,
           'amount' => 10,
           'skip' => 0,
@@ -155,57 +148,51 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rcr = new RestContentRequest($em);
 
-        if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
-        }
-        else {
-            unset($fields['key']);
-            $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
+        $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
 
-            $restHelper = $this->container->get('rest.helper');
-            if (!empty($items)) {
-                foreach ($items as $item) {
-                    $itemFields = $item->getFields();
-                    // Attempt to parse fields that contain dates.
-                    // Since the field value can be pushed without any
-                    // validation, the values might be way different from
-                    // what is expected.
-                    // Therefore make sure that this part doesn't fail on
-                    // weird input.
-                    try {
-                        if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
-                            $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['from']);
-                        }
-
-                        if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
-                            $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['to']);
-                        }
-
-                        if (!empty($itemFields['created']['value'])) {
-                            $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
-                        }
-
-                        if (!empty($itemFields['changed']['value'])) {
-                            $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
-                        }
-                    }
-                    catch (RestException $e) {
-                        // Do nothing.
+        $restHelper = $this->container->get('rest.helper');
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                $itemFields = $item->getFields();
+                // Attempt to parse fields that contain dates.
+                // Since the field value can be pushed without any
+                // validation, the values might be way different from
+                // what is expected.
+                // Therefore make sure that this part doesn't fail on
+                // weird input.
+                try {
+                    if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
+                        $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['from']);
                     }
 
-                    $this->lastItems[] = [
-                      'id'       => $item->getId(),
-                      'nid'      => $item->getNid(),
-                      'agency'   => $item->getAgency(),
-                      'type'     => $item->getType(),
-                      'fields'   => $itemFields,
-                      'taxonomy' => $item->getTaxonomy(),
-                      'list'     => $item->getList(),
-                    ];
+                    if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
+                        $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['to']);
+                    }
+
+                    if (!empty($itemFields['created']['value'])) {
+                        $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
+                    }
+
+                    if (!empty($itemFields['changed']['value'])) {
+                        $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
+                    }
+                }
+                catch (RestException $e) {
+                    // Do nothing.
                 }
 
-                $this->lastStatus = true;
+                $this->lastItems[] = [
+                  'id'       => $item->getId(),
+                  'nid'      => $item->getNid(),
+                  'agency'   => $item->getAgency(),
+                  'type'     => $item->getType(),
+                  'fields'   => $itemFields,
+                  'taxonomy' => $item->getTaxonomy(),
+                  'list'     => $item->getList(),
+                ];
             }
+
+            $this->lastStatus = true;
         }
 
         return $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastItems);
@@ -223,12 +210,6 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "requirement"="\d+",
      *       "description"="Agency number, owner of the content."
-     *     },
-     *     {
-     *       "name"="key",
-     *       "dataType"="string",
-     *       "description"="Unique hash for authentication. Built by using sha1 hash on a string of agency and secret key.",
-     *       "requirement"="[a-f0-9]+",
      *     },
      *     {
      *       "name"="field",
@@ -249,7 +230,6 @@ final class RestController extends Controller
 
         $fields = array(
           'agency' => null,
-          'key' => null,
           'field' => null,
           'query' => null,
         );
@@ -261,8 +241,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rcr = new RestContentRequest($em);
 
-        if (!$rcr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         } elseif (!empty($fields['query'])) {
             $this->lastItems = array();
 
@@ -327,13 +307,7 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "requirement"="\d+",
      *       "description"="Agency number, owner of the content."
-     *     },
-     *     {
-     *       "name"="key",
-     *       "dataType"="string",
-     *       "description"="Unique hash for authentication. Built by using sha1 hash on a string of agency and secret key.",
-     *       "requirement"="[a-f0-9]+",
-     *     },
+     *     }
      *   }
      * )
      */
@@ -342,8 +316,7 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
 
         $fields = array(
-            'agency' => null,
-            'key' => null
+            'agency' => null
         );
 
         foreach (array_keys($fields) as $field) {
@@ -353,8 +326,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rtr = new RestTaxonomyRequest($em);
 
-        if (!$rtr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         }
         else {
             $vocabularies = $rtr->fetchVocabularies($fields['agency'], $contentType);
@@ -382,13 +355,7 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "requirement"="\d+",
      *       "description"="Agency number, owner of the content."
-     *     },
-     *     {
-     *       "name"="key",
-     *       "dataType"="string",
-     *       "description"="Unique hash for authentication. Built by using sha1 hash on a string of agency and secret key.",
-     *       "requirement"="[a-f0-9]+",
-     *     },
+     *     }
      *   }
      * )
      */
@@ -397,8 +364,7 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
 
         $fields = array(
-            'agency' => null,
-            'key' => null
+            'agency' => null
         );
 
         foreach (array_keys($fields) as $field) {
@@ -408,8 +374,8 @@ final class RestController extends Controller
         $em = $this->get('doctrine_mongodb');
         $rtr = new RestTaxonomyRequest($em);
 
-        if (!$rtr->isSignatureValid($fields['agency'], $fields['key'])) {
-            $this->lastMessage = 'Failed validating request. Check your credentials (agency & key).';
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
         }
         else {
             $suggestions = $rtr->fetchTermSuggestions($fields['agency'], $vocabulary, $contentType, $query);
