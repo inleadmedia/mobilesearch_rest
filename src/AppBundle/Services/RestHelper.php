@@ -14,6 +14,7 @@ use AppBundle\Exception\RestException;
  */
 class RestHelper
 {
+
     const ISO8601 = 'c';
 
     private $timeZone = null;
@@ -30,8 +31,7 @@ class RestHelper
     {
         try {
             $this->timeZone = new \DateTimeZone($timeZone);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new RestException('Could not parse timezone string.');
         }
     }
