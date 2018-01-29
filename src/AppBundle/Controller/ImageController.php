@@ -35,7 +35,7 @@ class ImageController extends Controller
      *     "resize":"original|\d{1,4}x\d{1,4}"
      * })
      */
-    function imageAction(Request $request, $agency, $resize, $filename)
+    public function imageAction(Request $request, $agency, $resize, $filename)
     {
         // For those weird instances that lack GD extension.
         if (!extension_loaded('gd')) {

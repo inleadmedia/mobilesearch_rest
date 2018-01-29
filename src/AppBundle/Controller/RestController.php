@@ -227,7 +227,7 @@ final class RestController extends Controller
      *   },
      * )
      */
-    function searchAction(Request $request)
+    public function searchAction(Request $request)
     {
         $this->lastMethod = $request->getMethod();
 

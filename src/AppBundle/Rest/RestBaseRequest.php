@@ -144,8 +144,7 @@ abstract class RestBaseRequest
                 $isValid = false;
             } elseif ($field == 'agencyId' && !$this->isAgencyValid($requestCredentials[$field])) {
                 $isValid = false;
-            } elseif ($field == 'key' && !$this->isSignatureValid($requestCredentials['agencyId'],
-                    $requestCredentials['key'])) {
+            } elseif ($field == 'key' && !$this->isSignatureValid($requestCredentials['agencyId'], $requestCredentials['key'])) {
                 $isValid = false;
             }
         }

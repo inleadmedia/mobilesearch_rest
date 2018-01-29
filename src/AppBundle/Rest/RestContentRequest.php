@@ -241,8 +241,7 @@ class RestContentRequest extends RestBaseRequest
                 }
 
                 foreach ($field_value['value'] as $k => $value) {
-                    if (!empty($value) && isset($field_value['attr'][$k]) && preg_match('/^image\/(jpg|jpeg|gif|png)$/',
-                            $field_value['attr'][$k])) {
+                    if (!empty($value) && isset($field_value['attr'][$k]) && preg_match('/^image\/(jpg|jpeg|gif|png)$/', $field_value['attr'][$k])) {
                         $file_ext = explode('/', $field_value['attr'][$k]);
                         $extension = isset($file_ext[1]) ? $file_ext[1] : '';
                         $file_contents = $field_value['value'][$k];
