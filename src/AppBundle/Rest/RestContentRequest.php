@@ -5,11 +5,10 @@
 
 namespace AppBundle\Rest;
 
-use AppBundle\Exception\RestException;
+use AppBundle\Document\Content;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
-use AppBundle\Rest\RestBaseRequest;
 use AppBundle\Document\Content as FSContent;
 
 class RestContentRequest extends RestBaseRequest
@@ -46,47 +45,66 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
-    public function fetchFiltered($agency, $node = null, $amount = 10, $skip = 0, $sort = '', $dir = '', $type = null, array $vocabulary = null, array $terms = null, $upcoming = 0)
+    public function fetchFiltered($agency, $node = null, $amount = 10, $skip = 0, $sort = '', $dir = '', $type = null, array $vocabularies = null, array $terms = null, $upcoming = 0)
     {
         if (!empty($node)) {
             return $this->fetchContent(explode(',', $node), $agency);
         }
 
-        $criteria = array(
-          'agency' => $agency,
-        );
+        $qb = $this->em
+            ->getManager()
+            ->createQueryBuilder(Content::class);
 
-        $order = array();
-        if ($sort && $dir) {
-          $order = array(
-            $sort => $dir,
-          );
-        }
+        $qb->field('agency')->equals($agency);
 
         if ($type) {
-          $criteria['type'] = $type;
+            $qb->field('type')->equals($type);
+
+            if ($type == 'ding_event' && $upcoming) {
+                $qb->field('fields.field_ding_event_date.value.to')->gte(date('Y-m-d H:i:s', time()));
+            }
         }
 
-        if (count($vocabulary) != count($terms)) {
-            throw new RestException('Number of vocabulary and terms count mismatch.');
+        if ($sort && $dir) {
+            $qb->sort($sort, $dir);
         }
 
-        foreach ($vocabulary as $k => $item) {
-            $field = 'taxonomy.' . $item . '.terms';
-            $criteria[$field] = array('$in' => explode(',', $terms[$k]));
-        }
+        foreach ($vocabularies as $vocabulary) {
+            $field = 'taxonomy.' . $vocabulary . '.terms';
+            $qb->where(
+            'function() {
+                if (!this.taxonomy.'.$vocabulary.') {
+                    return false;
+                }
 
-        if ($type == 'ding_event' && $upcoming) {
-            $criteria['fields.field_ding_event_date.value.to'] = array(
-              '$gte' => date('Y-m-d H:i:s', time()),
+                var iterator = function(data, value) {
+                    var regex = new RegExp(value, "g");
+
+                    for (var field in data) {
+                        if (field.match(regex) || (typeof data[field] === "string" && data[field].match(regex))) {
+                            return true;
+                        }
+
+                        if (typeof data[field] === "object") {
+                            var found = false;
+                            found = iterator(data[field], value);
+                            if (found) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+                return iterator(this.'.$field.' || [], "^('.implode('|', $terms).')$");
+            }'
             );
         }
 
-        $content = $this->em
-          ->getRepository('AppBundle:Content')
-          ->findBy($criteria, $order, (int) $amount, (int) $skip);
+        $qb->skip($skip)->limit($amount);
 
-        return $content;
+        return $qb->getQuery()->execute();
     }
 
     public function fetchSuggestions($agency, $query, $field = 'fields.title.value')
@@ -201,6 +219,7 @@ class RestContentRequest extends RestBaseRequest
         'field_ding_news_list_image',
         'field_ding_page_title_image',
         'field_ding_page_list_image',
+        'field_easyscreen_image',
       );
       foreach ($fields as $field_name => &$field_value) {
         if (in_array($field_name, $image_fields)) {
@@ -229,7 +248,7 @@ class RestContentRequest extends RestBaseRequest
 
                 $fs->dumpFile($path, base64_decode($file_contents));
                 if ($fs->exists($path)) {
-                  $field_value['value'][$k] = 'files/' . $this->agencyId . '/' . $filename;
+                  $field_value['value'][$k] = 'files/' . $this->agencyId . '/original/' . $filename;
                 }
               }
             }
