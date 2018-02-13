@@ -8,17 +8,15 @@ namespace AppBundle\Services;
 use AppBundle\Exception\RestException;
 
 /**
- * More precise alias against PHP's built-in date format.
- */
-define('ISO8601', 'c');
-
-/**
  * Class RestHelper
  *
  * @package AppBundle\Services
  */
 class RestHelper
 {
+
+    const ISO8601 = 'c';
+
     private $timeZone = null;
 
     /**
@@ -33,8 +31,7 @@ class RestHelper
     {
         try {
             $this->timeZone = new \DateTimeZone($timeZone);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new RestException('Could not parse timezone string.');
         }
     }
@@ -60,7 +57,7 @@ class RestHelper
      *   Date in requested format
      * @throws \AppBundle\Exception\RestException
      */
-    public function adjustDate($timeStamp, $format = ISO8601)
+    public function adjustDate($timeStamp, $format = RestHelper::ISO8601)
     {
         if (!is_integer($timeStamp)) {
             throw new RestException('Argument must be a valid unix timestamp.');
