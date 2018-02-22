@@ -7,6 +7,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Document\Content;
 use AppBundle\Services\RestHelper;
+use Monolog\Logger;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -42,7 +43,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/content")
+     * @Route("/content", name="content")
      */
     public function contentAction(Request $request)
     {
@@ -127,7 +128,7 @@ final class RestController extends Controller
      *     }
      *  }
      * )
-     * @Route("/content/fetch")
+     * @Route("/content/fetch", name="content_fetch")
      * @Method({"GET"})
      */
     public function contentFetchAction(Request $request)
@@ -152,57 +153,66 @@ final class RestController extends Controller
             $fields[$field] = !empty($request->query->get($field)) ? $request->query->get($field) : $fields[$field];
         }
 
-        $em = $this->get('doctrine_mongodb');
-        $rcr = new RestContentRequest($em);
+        if (empty($fields['agency'])) {
+            $this->lastMessage = 'Failed validating request. Check if agency is set.';
+        }
+        else {
+            $em = $this->get('doctrine_mongodb');
+            $rcr = new RestContentRequest($em);
 
-        $items = call_user_func_array([$rcr, 'fetchFiltered'], $fields);
+            $items = call_user_func_array([$rcr, 'fetchFiltered'], $fields);
 
-        /** @var RestHelper $restHelper */
-        $restHelper = $this->container->get('rest.helper');
-        if (!empty($items)) {
-            /** @var Content $item */
-            foreach ($items as $item) {
-                $itemFields = $item->getFields();
-                // Make sure the date is in valid format.
-                try {
-                    if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
-                        $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['from']);
+            /** @var RestHelper $restHelper */
+            $restHelper = $this->container->get('rest.helper');
+            if (!empty($items)) {
+                /** @var Content $item */
+                foreach ($items as $item) {
+                    $itemFields = $item->getFields();
+                    // Make sure the date is in valid format.
+                    try {
+                        if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
+                            $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate(
+                                $itemFields['field_ding_event_date']['value']['from']
+                            );
+                        }
+
+                        if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
+                            $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate(
+                                $itemFields['field_ding_event_date']['value']['to']
+                            );
+                        }
+
+                        if (!empty($itemFields['created']['value'])) {
+                            $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
+                        }
+
+                        if (!empty($itemFields['changed']['value'])) {
+                            $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
+                        }
+                    } catch (RestException $e) {
+                        // Do nothing.
                     }
 
-                    if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
-                        $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate($itemFields['field_ding_event_date']['value']['to']);
-                    }
-
-                    if (!empty($itemFields['created']['value'])) {
-                        $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
-                    }
-
-                    if (!empty($itemFields['changed']['value'])) {
-                        $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
-                    }
-                } catch (RestException $e) {
-                    // Do nothing.
+                    $this->lastItems[] = [
+                        'id' => $item->getId(),
+                        'nid' => $item->getNid(),
+                        'agency' => $item->getAgency(),
+                        'type' => $item->getType(),
+                        'fields' => $itemFields,
+                        'taxonomy' => $item->getTaxonomy(),
+                        'list' => $item->getList(),
+                    ];
                 }
 
-                $this->lastItems[] = [
-                    'id' => $item->getId(),
-                    'nid' => $item->getNid(),
-                    'agency' => $item->getAgency(),
-                    'type' => $item->getType(),
-                    'fields' => $itemFields,
-                    'taxonomy' => $item->getTaxonomy(),
-                    'list' => $item->getList(),
-                ];
+                $this->lastStatus = true;
             }
-
-            $this->lastStatus = true;
         }
 
         return $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastItems);
     }
 
     /**
-     * @Route("/content/search")
+     * @Route("/content/search", name="content_search")
      * @Method({"GET"})
      * @ApiDoc(
      *   description="Search for content by querying certain field.",
@@ -271,7 +281,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/menu")
+     * @Route("/menu", name="menu")
      */
     public function menuAction(Request $request)
     {
@@ -285,7 +295,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/list")
+     * @Route("/list", name="list")
      */
     public function listsAction(Request $request)
     {
@@ -299,7 +309,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/taxonomy/vocabularies/{contentType}")
+     * @Route("/taxonomy/vocabularies/{contentType}", name="vocabularies")
      * @Method({"GET"})
      * @ApiDoc(
      *   description="Fetches vocabularies for a specific node type.",
@@ -346,7 +356,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/taxonomy/terms/{vocabulary}/{contentType}/{query}")
+     * @Route("/taxonomy/terms/{vocabulary}/{contentType}/{query}", name="terms")
      * @Method({"GET"})
      * @ApiDoc(
      *   description="Fetches term suggestions from a certain vocabulary that is related to a specific content (node) type.", section="Vocabulary (taxonomy) related", requirements={
