@@ -7,7 +7,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Document\Content;
 use AppBundle\Services\RestHelper;
-use Monolog\Logger;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
