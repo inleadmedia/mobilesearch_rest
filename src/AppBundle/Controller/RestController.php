@@ -5,6 +5,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\Content;
+use AppBundle\Services\RestHelper;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -21,21 +23,26 @@ use AppBundle\Rest\RestTaxonomyRequest;
 
 final class RestController extends Controller
 {
+
     private $lastStatus;
+
     private $lastMessage;
+
     private $lastMethod;
+
     private $lastItems;
+
     private $rawContent;
 
     public function __construct()
     {
         $this->lastMessage = '';
-        $this->lastStatus = FALSE;
-        $this->lastItems = array();
+        $this->lastStatus = false;
+        $this->lastItems = [];
     }
 
     /**
-     * @Route("/content")
+     * @Route("/content", name="content")
      */
     public function contentAction(Request $request)
     {
@@ -120,7 +127,7 @@ final class RestController extends Controller
      *     }
      *  }
      * )
-     * @Route("/content/fetch")
+     * @Route("/content/fetch", name="content_fetch")
      * @Method({"GET"})
      */
     public function contentFetchAction(Request $request)
@@ -128,42 +135,72 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
 
         // Defaults.
-        $fields = array(
-          'agency' => null,
-          'node' => null,
-          'amount' => 10,
-          'skip' => 0,
-          'sort' => 'fields.created.value',
-          'order' => 'DESC',
-          'type' => null,
-          'vocabulary' => array(),
-          'terms' => array(),
-          'upcoming' => 0,
-        );
+        $fields = [
+            'agency' => null,
+            'node' => null,
+            'amount' => 10,
+            'skip' => 0,
+            'sort' => 'fields.created.value',
+            'order' => 'DESC',
+            'type' => null,
+            'vocabulary' => [],
+            'terms' => [],
+            'upcoming' => 0,
+        ];
 
         foreach (array_keys($fields) as $field) {
             $fields[$field] = !empty($request->query->get($field)) ? $request->query->get($field) : $fields[$field];
         }
 
-        $em = $this->get('doctrine_mongodb');
-        $rcr = new RestContentRequest($em);
-
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
-        } else {
-            $items = call_user_func_array(array($rcr, 'fetchFiltered'), $fields);
+        }
+        else {
+            $em = $this->get('doctrine_mongodb');
+            $rcr = new RestContentRequest($em);
 
+            $items = call_user_func_array([$rcr, 'fetchFiltered'], $fields);
+
+            /** @var RestHelper $restHelper */
+            $restHelper = $this->container->get('rest.helper');
             if (!empty($items)) {
+                /** @var Content $item */
                 foreach ($items as $item) {
-                    $this->lastItems[] = array(
-                      'id' => $item->getId(),
-                      'nid' => $item->getNid(),
-                      'agency' => $item->getAgency(),
-                      'type' => $item->getType(),
-                      'fields' => $item->getFields(),
-                      'taxonomy' => $item->getTaxonomy(),
-                      'list' => $item->getList(),
-                    );
+                    $itemFields = $item->getFields();
+                    // Make sure the date is in valid format.
+                    try {
+                        if (!empty($itemFields['field_ding_event_date']['value']['from'])) {
+                            $itemFields['field_ding_event_date']['value']['from'] = $restHelper->adjustDate(
+                                $itemFields['field_ding_event_date']['value']['from']
+                            );
+                        }
+
+                        if (!empty($itemFields['field_ding_event_date']['value']['to'])) {
+                            $itemFields['field_ding_event_date']['value']['to'] = $restHelper->adjustDate(
+                                $itemFields['field_ding_event_date']['value']['to']
+                            );
+                        }
+
+                        if (!empty($itemFields['created']['value'])) {
+                            $itemFields['created']['value'] = $restHelper->adjustDate($itemFields['created']['value']);
+                        }
+
+                        if (!empty($itemFields['changed']['value'])) {
+                            $itemFields['changed']['value'] = $restHelper->adjustDate($itemFields['changed']['value']);
+                        }
+                    } catch (RestException $e) {
+                        // Do nothing.
+                    }
+
+                    $this->lastItems[] = [
+                        'id' => $item->getId(),
+                        'nid' => $item->getNid(),
+                        'agency' => $item->getAgency(),
+                        'type' => $item->getType(),
+                        'fields' => $itemFields,
+                        'taxonomy' => $item->getTaxonomy(),
+                        'list' => $item->getList(),
+                    ];
                 }
 
                 $this->lastStatus = true;
@@ -174,7 +211,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/content/search")
+     * @Route("/content/search", name="content_search")
      * @Method({"GET"})
      * @ApiDoc(
      *   description="Search for content by querying certain field.",
@@ -199,15 +236,15 @@ final class RestController extends Controller
      *   },
      * )
      */
-    function searchAction(Request $request)
+    public function searchAction(Request $request)
     {
         $this->lastMethod = $request->getMethod();
 
-        $fields = array(
-          'agency' => null,
-          'field' => null,
-          'query' => null,
-        );
+        $fields = [
+            'agency' => null,
+            'field' => null,
+            'query' => null,
+        ];
 
         foreach (array_keys($fields) as $field) {
             $fields[$field] = $request->query->get($field);
@@ -219,31 +256,31 @@ final class RestController extends Controller
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
         } elseif (!empty($fields['query'])) {
-            $this->lastItems = array();
+            $this->lastItems = [];
 
             $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
             foreach ($suggestions as $suggestion) {
                 $fields = $suggestion->getFields();
-                $this->lastItems[] = array(
-                  'id' => $suggestion->getId(),
-                  'nid' => $suggestion->getNid(),
-                  'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
-                  'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
-                );
+                $this->lastItems[] = [
+                    'id' => $suggestion->getId(),
+                    'nid' => $suggestion->getNid(),
+                    'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
+                    'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
+                ];
             }
 
             $this->lastStatus = true;
         }
 
         return $this->setResponse(
-          $this->lastStatus,
-          $this->lastMessage,
-          $this->lastItems
+            $this->lastStatus,
+            $this->lastMessage,
+            $this->lastItems
         );
     }
 
     /**
-     * @Route("/menu")
+     * @Route("/menu", name="menu")
      */
     public function menuAction(Request $request)
     {
@@ -257,7 +294,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/list")
+     * @Route("/list", name="list")
      */
     public function listsAction(Request $request)
     {
@@ -271,7 +308,7 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/taxonomy/vocabularies/{contentType}")
+     * @Route("/taxonomy/vocabularies/{contentType}", name="vocabularies")
      * @Method({"GET"})
      * @ApiDoc(
      *   description="Fetches vocabularies for a specific node type.",
@@ -290,9 +327,9 @@ final class RestController extends Controller
     {
         $this->lastMethod = $request->getMethod();
 
-        $fields = array(
-            'agency' => null
-        );
+        $fields = [
+            'agency' => null,
+        ];
 
         foreach (array_keys($fields) as $field) {
             $fields[$field] = $request->query->get($field);
@@ -303,8 +340,7 @@ final class RestController extends Controller
 
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
-        }
-        else {
+        } else {
             $vocabularies = $rtr->fetchVocabularies($fields['agency'], $contentType);
 
             $this->lastItems = $vocabularies;
@@ -319,12 +355,10 @@ final class RestController extends Controller
     }
 
     /**
-     * @Route("/taxonomy/terms/{vocabulary}/{contentType}/{query}")
+     * @Route("/taxonomy/terms/{vocabulary}/{contentType}/{query}", name="terms")
      * @Method({"GET"})
      * @ApiDoc(
-     *   description="Fetches term suggestions from a certain vocabulary that is related to a specific content (node) type.",
-     *   section="Vocabulary (taxonomy) related",
-     *   requirements={
+     *   description="Fetches term suggestions from a certain vocabulary that is related to a specific content (node) type.", section="Vocabulary (taxonomy) related", requirements={
      *     {
      *       "name"="agency",
      *       "dataType"="integer",
@@ -338,9 +372,9 @@ final class RestController extends Controller
     {
         $this->lastMethod = $request->getMethod();
 
-        $fields = array(
-            'agency' => null
-        );
+        $fields = [
+            'agency' => null,
+        ];
 
         foreach (array_keys($fields) as $field) {
             $fields[$field] = $request->query->get($field);
@@ -351,8 +385,7 @@ final class RestController extends Controller
 
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
-        }
-        else {
+        } else {
             $suggestions = $rtr->fetchTermSuggestions($fields['agency'], $vocabulary, $contentType, $query);
 
             $this->lastItems = $suggestions;
@@ -368,34 +401,27 @@ final class RestController extends Controller
 
     private function relay(RestBaseRequest $rbr)
     {
-        try
-        {
+        try {
             $rbr->setRequestBody($this->rawContent);
             $result = $rbr->handleRequest($this->lastMethod);
             $this->lastMessage = $result;
             $this->lastStatus = true;
-        }
-        catch (RestException $exc)
-        {
-            $this->lastMessage = 'Request fault: ' . $exc->getMessage();
-        }
-        catch (\Exception $exc)
-        {
-            $this->lastMessage = 'Generic fault: ' . $exc->getMessage();
+        } catch (RestException $exc) {
+            $this->lastMessage = 'Request fault: '.$exc->getMessage();
+        } catch (\Exception $exc) {
+            $this->lastMessage = 'Generic fault: '.$exc->getMessage();
         }
 
-        $response = $this->setResponse($this->lastStatus, $this->lastMessage);
-
-        return $response;
+        return $this->setResponse($this->lastStatus, $this->lastMessage);
     }
 
-    private function setResponse($status = true, $message = '', $items = array())
+    private function setResponse($status = true, $message = '', $items = [])
     {
-        $responseContent = array(
+        $responseContent = [
             'status' => $status,
             'message' => $message,
             'items' => $items,
-        );
+        ];
 
         $response = new Response(json_encode($responseContent));
         $response->headers->set('Content-Type', 'application/json');

@@ -10,15 +10,16 @@ use AppBundle\Document\Menu as FSMenu;
 
 class RestMenuRequest extends RestBaseRequest
 {
+
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);
 
         $this->primaryIdentifier = 'mlid';
-        $this->requiredFields = array(
+        $this->requiredFields = [
             $this->primaryIdentifier,
             'agency',
-        );
+        ];
     }
 
     protected function exists($id, $agency)
@@ -30,10 +31,10 @@ class RestMenuRequest extends RestBaseRequest
 
     protected function get($id, $agency)
     {
-        $criteria = array(
-            $this->primaryIdentifier => (int) $id,
+        $criteria = [
+            $this->primaryIdentifier => (int)$id,
             'agency' => $agency,
-        );
+        ];
 
         $entity = $this->em
             ->getRepository('AppBundle:Menu')
