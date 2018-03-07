@@ -86,7 +86,7 @@ class RestContentRequest extends RestBaseRequest
             $field = 'taxonomy.'.$vocabulary.'.terms';
             $qb->where(
                 'function() {
-                    if (!this.taxonomy.'.$vocabulary.') {
+                    if (!this.taxonomy || !this.taxonomy.'.$vocabulary.') {
                         return false;
                     }
 

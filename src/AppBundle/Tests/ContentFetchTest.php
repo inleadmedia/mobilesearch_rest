@@ -160,7 +160,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
                 break;
             }
 
-            $this->assertEquals($amount, count($result['items']));
+            $this->assertLessThan($amount + 1, count($result['items']));
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -173,7 +173,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $parameters['skip'] = $skip;
         }
 
-        $this->assertCount(6, $node_ids);
+        $this->assertCount(7, $node_ids);
         // Expect zero, since it we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }
@@ -317,7 +317,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $result = json_decode($response->getContent(), true);
 
         $this->assertResponseStructure($result);
-        $this->assertCount(3, $result['items']);
+        $this->assertCount(4, $result['items']);
     }
 
     /**
