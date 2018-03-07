@@ -238,6 +238,12 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "required"=false,
      *       "description"="'Hard' limit of results returned. Default: 10."
+     *     },
+     *     {
+     *       "name"="skip",
+     *       "dataType"="integer",
+     *       "required"=false,
+     *       "description"="Fetch the result set starting from this record. Default: 0."
      *     }
      *   },
      * )
@@ -251,6 +257,7 @@ final class RestController extends Controller
             'field' => null,
             'query' => null,
             'amount' => 10,
+            'skip' => 0,
         ];
 
         foreach (array_keys($fields) as $field) {
@@ -269,7 +276,8 @@ final class RestController extends Controller
                 $fields['agency'],
                 $fields['query'],
                 $fields['field'],
-                $fields['amount']
+                $fields['amount'],
+                $fields['skip']
             );
             foreach ($suggestions as $suggestion) {
                 $fields = $suggestion->getFields();

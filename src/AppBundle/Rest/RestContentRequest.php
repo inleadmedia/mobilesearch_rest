@@ -120,13 +120,14 @@ class RestContentRequest extends RestBaseRequest
         return $qb->getQuery()->execute();
     }
 
-    public function fetchSuggestions($agency, $query, $field = 'fields.title.value', $amount = 10)
+    public function fetchSuggestions($agency, $query, $field = 'fields.title.value', $amount = 10, $skip = 0)
     {
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class)
             ->field('agency')->equals($agency)
             ->field($field)->equals(new \MongoRegex('/'.$query.'/i'))
+            ->skip($skip)
             ->limit($amount);
 
         return $qb->getQuery()->execute();

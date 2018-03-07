@@ -160,7 +160,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
                 break;
             }
 
-            $this->assertLessThan($amount + 1, count($result['items']));
+            $this->assertLessThanOrEqual($amount, count($result['items']));
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -174,7 +174,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         }
 
         $this->assertCount(7, $node_ids);
-        // Expect zero, since it we reached end of the list.
+        // Expect zero, since we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }
 

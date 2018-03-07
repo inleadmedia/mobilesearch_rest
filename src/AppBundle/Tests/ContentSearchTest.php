@@ -142,6 +142,54 @@ class ContentSearchTest extends AbstractFixtureAwareTest
     }
 
     /**
+     * Fetches paged search results.
+     */
+    public function testPagedSearch()
+    {
+        $amount = 2;
+        $skip = 0;
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_',
+            'amount' => $amount,
+            'skip' => $skip,
+        ];
+
+        $results = [];
+
+        while (true) {
+            /** @var Response $response */
+            $response = $this->request(self::URI, $parameters, 'GET');
+
+            $this->assertEquals(200, $response->getStatusCode());
+
+            $result = json_decode($response->getContent(), true);
+
+            $this->assertResponseStructure($result);
+
+            if (empty($result['items'])) {
+                break;
+            }
+
+            $this->assertLessThanOrEqual($amount, count($result['items']));
+
+            foreach ($result['items'] as $item) {
+                // Node id's normally should not repeat for same agency.
+                $this->assertNotContains($item['nid'], $results);
+                $results[] = $item['nid'];
+            }
+
+            $skip += $amount;
+            $parameters['skip'] = $skip;
+        }
+
+        $this->assertCount(7, $results);
+        // Expect zero, since we reached end of the list.
+        $this->assertEquals(0, count($result['items']));
+    }
+
+    /**
      * Asserts item structure in the response.
      *
      * @param array $item   One item from the result set.
