@@ -24,13 +24,17 @@
         "alcaeus/mongo-php-adapter": "^1.1",
         "mongodb/mongodb": "@beta",
         "doctrine/mongodb": "dev-master",
-        "nelmio/api-doc-bundle": "^2.13"
+        "nelmio/api-doc-bundle": "^2.13",
+        "fzaninotto/faker": "^1.7"
     },
     "provide": {
         "ext-mongo": "1.6.12"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+        "sensio/generator-bundle": "~2.3",
+        "doctrine/doctrine-fixtures-bundle": "^2.4",
+        "symfony/phpunit-bridge": "^4.0",
+        "phpunit/phpunit": "^7"
     },
     "scripts": {
         "post-install-cmd": [
