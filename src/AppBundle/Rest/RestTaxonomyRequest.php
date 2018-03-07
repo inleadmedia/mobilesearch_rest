@@ -47,6 +47,10 @@ class RestTaxonomyRequest extends RestBaseRequest
 
         $vocabularies = [];
         foreach ($content as $node) {
+            if (!is_array($node->getTaxonomy())) {
+                continue;
+            }
+
             foreach ($node->getTaxonomy() as $vocabularyName => $vocabulary) {
                 if (!empty($vocabulary['terms']) && is_array($vocabulary['terms'])) {
                     $vocabularies[$vocabularyName] = $vocabulary['name'];
@@ -68,6 +72,10 @@ class RestTaxonomyRequest extends RestBaseRequest
             ->field('type')->equals($contentType)
             ->where(
                 'function() {
+                    if (!this.taxonomy || !this.taxonomy.'.$vocabulary.') {
+                        return false;
+                    }
+
                     var iterator = function(data, value) {
                         var regex = new RegExp(value, "ig");
 

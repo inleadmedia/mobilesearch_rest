@@ -82,7 +82,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
 
         $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
-        $this->assertCount(6, $result['items']);
+        $this->assertCount(7, $result['items']);
 
         foreach ($result['items'] as $item) {
             $this->assertItemStructure($item);
@@ -109,7 +109,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
 
         $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
-        $this->assertCount(6, $result['items']);
+        $this->assertCount(7, $result['items']);
 
         foreach ($result['items'] as $item) {
             $this->assertItemStructure($item);
