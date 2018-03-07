@@ -38,7 +38,7 @@
                             'Theta': []
 
 -
-    'nid': 1001
+    'nid': ~
     'agency': '999999'
     'type': 'ding_news'
     'list': []
@@ -73,7 +73,7 @@
                     'Delta': []
 
 -
-    'nid': 1003
+    'nid': ~
     'agency': '999999'
     'type': 'ding_news'
     'list': []

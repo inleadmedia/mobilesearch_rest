@@ -232,6 +232,12 @@ final class RestController extends Controller
      *       "name"="query",
      *       "dataType"="string",
      *       "description"="The search query."
+     *     },
+     *     {
+     *       "name"="amount",
+     *       "dataType"="integer",
+     *       "required"=false,
+     *       "description"="'Hard' limit of results returned. Default: 10."
      *     }
      *   },
      * )
@@ -244,10 +250,11 @@ final class RestController extends Controller
             'agency' => null,
             'field' => null,
             'query' => null,
+            'amount' => 10,
         ];
 
         foreach (array_keys($fields) as $field) {
-            $fields[$field] = $request->query->get($field);
+            $fields[$field] = $request->query->get($field) ?? $fields[$field];
         }
 
         $em = $this->get('doctrine_mongodb');
@@ -258,7 +265,12 @@ final class RestController extends Controller
         } elseif (!empty($fields['query'])) {
             $this->lastItems = [];
 
-            $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
+            $suggestions = $rcr->fetchSuggestions(
+                $fields['agency'],
+                $fields['query'],
+                $fields['field'],
+                $fields['amount']
+            );
             foreach ($suggestions as $suggestion) {
                 $fields = $suggestion->getFields();
                 $this->lastItems[] = [

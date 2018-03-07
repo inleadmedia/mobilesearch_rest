@@ -1,5 +1,5 @@
 -
-    'nid': 1004
+    'nid': ~
     'agency': '999999'
     'type': 'ding_event'
     'list': []
@@ -45,7 +45,7 @@
                             'Theta': []
 
 -
-    'nid': 1005
+    'nid': ~
     'agency': '999999'
     'type': 'ding_event'
     'list': []
@@ -87,7 +87,7 @@
                     'Delta': []
 
 -
-    'nid': 1006
+    'nid': ~
     'agency': '999999'
     'type': 'ding_event'
     'list': []
@@ -126,7 +126,7 @@
                 'Alpha': []
 
 -
-    'nid': 1007
+    'nid': ~
     'agency': '999999'
     'type': 'ding_event'
     'list': []

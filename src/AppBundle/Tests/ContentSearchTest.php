@@ -117,6 +117,31 @@ class ContentSearchTest extends AbstractFixtureAwareTest
     }
 
     /**
+     * Fetch limited results.
+     */
+    public function testLimitedSearch()
+    {
+        $amount = 3;
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_',
+            'amount' => $amount,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertResponseStructure($result);
+        $this->assertTrue($result['status']);
+        $this->assertCount($amount, $result['items']);
+    }
+
+    /**
      * Asserts item structure in the response.
      *
      * @param array $item   One item from the result set.

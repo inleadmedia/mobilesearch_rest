@@ -26,11 +26,11 @@ class ContentFixtures extends Fixture
         foreach (array_merge($newsDefinitions, $eventDefitions) as $fixture) {
             $content = new Content();
 
-            $content->setNid($fixture['nid']);
-            $content->setAgency($fixture['agency']);
-            $content->setType($fixture['type']);
-
             // Set some random fields which are defined as null.
+            $content->setNid($fixture['nid'] ?? mt_rand());
+            $content->setAgency($fixture['agency'] ?? mt_rand(100000, 999999));
+            $content->setType($fixture['type'] ?? 'ding_'.$faker->word);
+
             foreach ($fixture['fields'] as $field => &$values) {
                 if (is_null($values['value'])) {
                     switch ($field) {
@@ -56,9 +56,9 @@ class ContentFixtures extends Fixture
                 }
             }
 
-            $content->setFields($fixture['fields']);
-            $content->setTaxonomy($fixture['taxonomy']);
-            $content->setList($fixture['list']);
+            $content->setFields($fixture['fields'] ?? []);
+            $content->setTaxonomy($fixture['taxonomy'] ?? []);
+            $content->setList($fixture['list'] ?? []);
 
             $manager->persist($content);
         }
