@@ -58,7 +58,8 @@ class RestContentRequest extends RestBaseRequest
         $type = null,
         array $vocabularies = null,
         array $terms = null,
-        $upcoming = 0
+        $upcoming = 0,
+        array $libraries = null
     ) {
         if (!empty($node)) {
             return $this->fetchContent(explode(',', $node), $agency);
@@ -115,11 +116,22 @@ class RestContentRequest extends RestBaseRequest
             );
         }
 
+        if (!empty($libraries)) {
+            $qb->field('fields.og_group_ref.value')->in($libraries);
+        }
+
         $qb->skip($skip)->limit($amount);
 
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * @param $agency
+     * @param $query
+     * @param string $field
+     *
+     * @return Content[]
+     */
     public function fetchSuggestions($agency, $query, $field = 'fields.title.value')
     {
         $content = $this->em->getRepository('AppBundle:Content')->findBy(
