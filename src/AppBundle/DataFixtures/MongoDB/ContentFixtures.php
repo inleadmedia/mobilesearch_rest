@@ -42,11 +42,11 @@ class ContentFixtures extends Fixture
                             break;
                         case 'created':
                             // Assume creation time couple of hours ago.
-                            $value = date(DATE_ISO8601, $now - mt_rand(1, 5) * 86400);
+                            $value = gmdate('c', $now - mt_rand(1, 5) * 86400);
                             break;
                         case 'changed':
                             // Assume update time couple of minutes ago.
-                            $value = date(DATE_ISO8601, $now - mt_rand(1, 59) * 60);
+                            $value = gmdate('c', $now - mt_rand(1, 59) * 60);
                             break;
                         default:
                             $value = null;

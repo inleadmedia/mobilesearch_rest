@@ -124,6 +124,12 @@ final class RestController extends Controller
      *       "dataType"="boolean",
      *       "description"="Fetch only upcoming events. Viable when 'type=ding_event'.",
      *       "required"=false
+     *     },
+     *     {
+     *       "name"="library[]",
+     *       "dataType"="string",
+     *       "description"="Library name. Filters the nodes only attached to this library. Can be multiple, e.g. library[]='Alpha'&library[]='Beta'",
+     *       "required"=false
      *     }
      *  }
      * )
@@ -146,6 +152,7 @@ final class RestController extends Controller
             'vocabulary' => [],
             'terms' => [],
             'upcoming' => 0,
+            'library' => [],
         ];
 
         foreach (array_keys($fields) as $field) {
@@ -233,7 +240,7 @@ final class RestController extends Controller
      *       "dataType"="string",
      *       "description"="The search query."
      *     }
-     *   },
+     *   }
      * )
      */
     public function searchAction(Request $request)
@@ -259,14 +266,26 @@ final class RestController extends Controller
             $this->lastItems = [];
 
             $suggestions = $rcr->fetchSuggestions($fields['agency'], $fields['query'], $fields['field']);
+            /** @var Content $suggestion */
             foreach ($suggestions as $suggestion) {
                 $fields = $suggestion->getFields();
-                $this->lastItems[] = [
+                $item = [
                     'id' => $suggestion->getId(),
                     'nid' => $suggestion->getNid(),
                     'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
                     'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
+                    'type' => $suggestion->getType(),
                 ];
+
+                if ('ding_event' == $suggestion->getType()) {
+                    $item['event_date'] = [
+                        'from' => $fields['field_ding_event_date']['value']['from'],
+                        'to' => $fields['field_ding_event_date']['value']['to'],
+                        'all_day' => $fields['field_ding_event_date']['attr']['all_day'] ?? false,
+                    ];
+                }
+
+                $this->lastItems[] = $item;
             }
 
             $this->lastStatus = true;
