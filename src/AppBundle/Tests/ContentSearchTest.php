@@ -4,6 +4,7 @@ namespace AppBundle\Tests;
 
 use AppBundle\DataFixtures\MongoDB\AgencyFixtures;
 use AppBundle\DataFixtures\MongoDB\ContentFixtures;
+use AppBundle\Rest\RestContentRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContentSearchTest extends AbstractFixtureAwareTest
@@ -50,10 +51,10 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertTrue($result['status']);
-        $this->assertCount(3, $result['items']);
 
         foreach ($result['items'] as $item) {
             $this->assertItemStructure($item);
+            $this->assertEquals($parameters['query'], $item[$parameters['field']]);
         }
     }
 
@@ -74,10 +75,13 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertTrue($result['status']);
-        $this->assertCount(7, $result['items']);
 
         foreach ($result['items'] as $item) {
             $this->assertItemStructure($item);
+
+            $position = strpos($item['type'], $parameters['query']);
+            $this->assertGreaterThanOrEqual(0, $position);
+            $this->assertNotFalse($position);
         }
     }
 
@@ -98,10 +102,183 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertTrue($result['status']);
-        $this->assertCount(7, $result['items']);
 
         foreach ($result['items'] as $item) {
             $this->assertItemStructure($item);
+            $this->assertEquals(1, preg_match('/'.$parameters['query'].'/i', $item['title']));
+        }
+    }
+
+    /**
+     * Fetch limited results.
+     */
+    public function testLimitedSearch()
+    {
+        $amount = 3;
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_',
+            'amount' => $amount,
+            'status' => RestContentRequest::STATUS_ALL,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertResponseStructure($result);
+        $this->assertTrue($result['status']);
+        $this->assertCount($amount, $result['items']);
+    }
+
+    /**
+     * Fetches paged search results.
+     */
+    public function testPagedSearch()
+    {
+        $amount = 2;
+        $skip = 0;
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_',
+            'amount' => $amount,
+            'skip' => $skip,
+            'status' => RestContentRequest::STATUS_ALL,
+        ];
+
+        $results = [];
+
+        while (true) {
+            /** @var Response $response */
+            $response = $this->request(self::URI, $parameters, 'GET');
+
+            $result = $this->assertResponse($response);
+
+            if (empty($result['items'])) {
+                break;
+            }
+
+            $this->assertLessThanOrEqual($amount, count($result['items']));
+
+            foreach ($result['items'] as $item) {
+                // Node id's normally should not repeat for same agency.
+                $this->assertNotContains($item['nid'], $results);
+                $results[] = $item['nid'];
+            }
+
+            $skip += $amount;
+            $parameters['skip'] = $skip;
+        }
+
+        $this->assertCount(7, $results);
+        // Expect zero, since we reached end of the list.
+        $this->assertEquals(0, count($result['items']));
+    }
+
+    /**
+     * Fetches nodes filtered by status.
+     */
+    public function testStatusFilterSearch()
+    {
+        // Fetch published nodes.
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_',
+            'status' => RestContentRequest::STATUS_PUBLISHED,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        foreach ($result['items'] as $item) {
+            $this->assertEquals($parameters['status'], $item['status']);
+        }
+        $publishedCount = count($result['items']);
+
+        // Fetch unpublished nodes.
+        $parameters['status'] = RestContentRequest::STATUS_UNPUBLISHED;
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        foreach ($result['items'] as $item) {
+            $this->assertEquals($parameters['status'], $item['status']);
+        }
+        $unpublishedCount = count($result['items']);
+
+        // Fetch all nodes.
+        $parameters['status'] = RestContentRequest::STATUS_ALL;
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $allCount = count($result['items']);
+
+        // Assume that a sum of published and unpublished nodes is the correct
+        // number of nodes that exist.
+        $this->assertEquals($allCount, $unpublishedCount + $publishedCount);
+    }
+
+    /**
+     * Fetches upcoming events.
+     */
+    public function testUpcomingEventsSearch()
+    {
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_event',
+            'upcoming' => 1,
+            'status' => RestContentRequest::STATUS_ALL,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $event_unixtime = strtotime($item['event_date']['from']);
+            $this->assertNotEquals(-1, $event_unixtime);
+            $this->assertGreaterThan(time(), $event_unixtime);
+        }
+    }
+
+    /**
+     * Fetches default set of published content.
+     */
+    public function testDefaultStatusSearch()
+    {
+        $parameters = [
+            'agency' => self::AGENCY,
+            'field' => 'type',
+            'query' => 'ding_news',
+        ];
+
+        /** @var Response $response */
+        $response = $this->request(self::URI, $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $this->assertEquals(RestContentRequest::STATUS_PUBLISHED, $item['status']);
         }
     }
 

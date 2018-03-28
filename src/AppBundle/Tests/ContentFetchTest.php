@@ -189,7 +189,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
                 break;
             }
 
-            $this->assertLessThan($amount + 1, count($result['items']));
+            $this->assertLessThanOrEqual($amount, count($result['items']));
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -203,7 +203,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         }
 
         $this->assertCount(7, $node_ids);
-        // Expect zero, since it we reached end of the list.
+        // Expect zero, since we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }
 
@@ -318,7 +318,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertCount(1, $result['items']);
 
         $event_node = reset($result['items']);
-        $event_unixtime = strtotime($event_node['fields']['field_ding_event_date']['value']['to']);
+        $event_unixtime = strtotime($event_node['fields']['field_ding_event_date']['value']['from']);
         $this->assertNotEquals(-1, $event_unixtime);
         $this->assertGreaterThan(time(), $event_unixtime);
 
