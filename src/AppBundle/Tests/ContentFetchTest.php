@@ -10,6 +10,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 {
     use AssertResponseStructureTrait;
 
+    /**
+     * Fetch with missing data.
+     */
     public function testFetchEmpty()
     {
         $agency = '';
@@ -19,11 +22,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertFalse($result['status']);
         $this->assertEmpty($result['items']);
     }
@@ -43,11 +43,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
         $this->assertEquals(1, count($result['items']));
         $this->assertEquals($nid, $result['items'][0]['nid']);
@@ -69,15 +66,56 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
         $this->assertEquals(3, count($result['items']));
 
         foreach ($result['items'] as $item) {
             $this->assertEquals($type, $item['type']);
             $this->assertEquals($agency, $item['agency']);
+        }
+    }
+
+    /**
+     * Fetch by library.
+     */
+    public function testFetchByLibrary()
+    {
+        $agency = '999999';
+        $libraries = ['Alpha'];
+        $parameters = [
+            'agency' => $agency,
+            'library' => $libraries,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        $previousCount = count($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $this->assertArraySubset($libraries, $item['fields']['og_group_ref']['value']);
+        }
+
+        // Having more than one library would yield more items than previously.
+        $libraries = ['Alpha', 'Beta'];
+        $parameters['library'] = $libraries;
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $this->assertGreaterThan($previousCount, count($result['items']));
+
+        foreach ($result['items'] as $item) {
+            $this->assertGreaterThanOrEqual(1, count(array_intersect($libraries, $item['fields']['og_group_ref']['value'])));
         }
     }
 
@@ -94,10 +132,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
         // 10 items are returned by default.
         $this->assertLessThan(11, count($result['items']));
@@ -121,11 +157,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
         $this->assertEquals($amount, count($result['items']));
     }
@@ -150,11 +183,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             /** @var Response $response */
             $response = $this->request('/content/fetch', $parameters, 'GET');
 
-            $this->assertEquals(200, $response->getStatusCode());
-
-            $result = json_decode($response->getContent(), true);
-
-            $this->assertResponseStructure($result);
+            $result = $this->assertResponse($response);
 
             if (empty($result['items'])) {
                 break;
@@ -196,11 +225,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
 
         for ($i = 1; $i < count($result['items']); $i++) {
@@ -213,11 +239,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
 
         for ($i = 1; $i < count($result['items']); $i++) {
@@ -243,11 +266,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
 
         for ($i = 1; $i < count($result['items']); $i++) {
@@ -263,11 +283,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertNotEmpty($result['items']);
 
         for ($i = 1; $i < count($result['items']); $i++) {
@@ -295,11 +312,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         // Upcoming only.
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
-        $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount(1, $result['items']);
 
         $event_node = reset($result['items']);
@@ -312,11 +327,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
-        $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount(4, $result['items']);
     }
 
@@ -339,11 +352,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         // Check for nodes with 'Theta' term.
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
-        $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount(1, $result['items']);
 
         $found = [];
@@ -362,11 +373,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
-        $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount(3, $result['items']);
 
         $found = [];
@@ -392,9 +401,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $response = $this->request('/content/fetch', $parameters, 'GET');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount(2, $result['items']);
 
         $found = [];
@@ -448,11 +456,9 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         /** @var Response $response */
         $response = $this->request('/content/fetch', $parameters, 'GET');
-        $this->assertEquals(200, $response->getStatusCode());
 
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
-        $this->assertResponseStructure($result);
         $this->assertCount($amount, $result['items']);
 
         // Check some static values.

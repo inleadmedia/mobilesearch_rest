@@ -3,7 +3,7 @@
 namespace AppBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractBaseTest extends WebTestCase
 {
@@ -11,15 +11,32 @@ abstract class AbstractBaseTest extends WebTestCase
 
     private $container;
 
+    /**
+     * Returns the http client.
+     *
+     * @return mixed
+     */
     public function getClient()
     {
         return $this->client;
     }
 
+    /**
+     * Returns the DI container.
+     *
+     * @return mixed
+     */
     public function getContainer()
     {
         return $this->container;
     }
+
+    /**
+     * Asserts service response structure.
+     *
+     * @param array $response   Decoded response.
+     */
+    abstract public function assertResponseStructure(array $response);
 
     /**
      * Sends a request.
@@ -39,6 +56,36 @@ abstract class AbstractBaseTest extends WebTestCase
         $response = $client->getResponse();
 
         return $response;
+    }
+
+    /**
+     * Asserts and decodes service responses.
+     *
+     * @param Response $response    Response object.
+     * @return mixed                Response array, false on failure.
+     */
+    public function assertResponse(Response $response)
+    {
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($response->getContent());
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertResponseStructure($result);
+
+        return $result;
+    }
+
+    /**
+     * Asserts an ISO-8601 date string.
+     *
+     * @param string $date  Input date.
+     */
+    public function assertIsoDate($date)
+    {
+        $nodeChangedDateValue = strtotime($date);
+        $this->assertInternalType('int', $nodeChangedDateValue);
+        $this->assertEquals(gmdate('c', $nodeChangedDateValue), $date);
     }
 
     /**

@@ -6,16 +6,18 @@
 namespace AppBundle\Rest;
 
 use AppBundle\Document\Content;
-use AppBundle\Exception\RestException;
+use AppBundle\Document\Content as FSContent;
 use AppBundle\Services\RestHelper;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
-use AppBundle\Document\Content as FSContent;
-
 class RestContentRequest extends RestBaseRequest
 {
-
+    /**
+     * RestContentRequest constructor.
+     *
+     * @param MongoEM $em
+     */
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);
@@ -27,6 +29,9 @@ class RestContentRequest extends RestBaseRequest
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function exists($id, $agency)
     {
         $entity = $this->get($id, $agency);
@@ -34,6 +39,9 @@ class RestContentRequest extends RestBaseRequest
         return !is_null($entity);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function get($id, $agency)
     {
         $criteria = [
@@ -48,6 +56,23 @@ class RestContentRequest extends RestBaseRequest
         return $content;
     }
 
+    /**
+     * Fetches content that fulfills certain criteria.
+     *
+     * @param string $agency
+     * @param int $node
+     * @param int $amount
+     * @param int $skip
+     * @param string $sort
+     * @param string $dir
+     * @param string $type
+     * @param array $vocabularies
+     * @param array $terms
+     * @param int $upcoming
+     * @param array $libraries
+     *
+     * @return Content[]
+     */
     public function fetchFiltered(
         $agency,
         $node = null,
@@ -58,7 +83,8 @@ class RestContentRequest extends RestBaseRequest
         $type = null,
         array $vocabularies = null,
         array $terms = null,
-        $upcoming = 0
+        $upcoming = 0,
+        array $libraries = null
     ) {
         if (!empty($node)) {
             return $this->fetchContent(explode(',', $node), $agency);
@@ -115,11 +141,24 @@ class RestContentRequest extends RestBaseRequest
             );
         }
 
+        if (!empty($libraries)) {
+            $qb->field('fields.og_group_ref.value')->in($libraries);
+        }
+
         $qb->skip($skip)->limit($amount);
 
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * Searches for content that match a certain query string.
+     *
+     * @param string $agency
+     * @param string $query
+     * @param string $field
+     *
+     * @return Content[]
+     */
     public function fetchSuggestions($agency, $query, $field = 'fields.title.value', $amount = 10, $skip = 0)
     {
         $qb = $this->em
@@ -133,6 +172,14 @@ class RestContentRequest extends RestBaseRequest
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * Fetches content by id.
+     *
+     * @param array $ids
+     * @param string $agency
+     *
+     * @return Content[]
+     */
     public function fetchContent(array $ids, $agency)
     {
         if (empty($ids)) {
@@ -157,6 +204,9 @@ class RestContentRequest extends RestBaseRequest
         return $entities;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function insert()
     {
         $entity = $this->prepare(new FSContent());
@@ -168,6 +218,9 @@ class RestContentRequest extends RestBaseRequest
         return $entity;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function update($id, $agency)
     {
         $loadedEntity = $this->get($id, $agency);
@@ -179,6 +232,9 @@ class RestContentRequest extends RestBaseRequest
         return $updatedEntity;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function delete($id, $agency)
     {
         $entity = $this->get($id, $agency);
@@ -190,6 +246,12 @@ class RestContentRequest extends RestBaseRequest
         return $entity;
     }
 
+    /**
+     * Prepares payload data before store to ensure data consistency.
+     *
+     * @param FSContent $content
+     * @return FSContent
+     */
     public function prepare(FSContent $content)
     {
         $body = $this->getParsedBody();
@@ -217,8 +279,11 @@ class RestContentRequest extends RestBaseRequest
     }
 
     /**
-     * @todo
-     * Quick'n'dirty.
+     * Processes image fields by converting base64 image content to physical file.
+     *
+     * @param array $fields
+     *
+     * @return array
      */
     private function parseFields(array $fields)
     {

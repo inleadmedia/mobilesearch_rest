@@ -24,6 +24,12 @@
             'name': 'Status'
             'value': 1
             'attr': []
+        'og_group_ref':
+            'name': 'Library'
+            'value':
+                - Alpha
+                - Beta
+            'attr': []
     'taxonomy':
         'field_ding_news_category':
             'name': 'News Category'
@@ -63,6 +69,14 @@
             'name': 'Status'
             'value': 1
             'attr': []
+        'og_group_ref':
+            'name': 'Library'
+            'value':
+                - Alpha
+                - Beta
+                - Gamma
+                - Delta
+            'attr': []
     'taxonomy':
         'field_ding_news_category':
             'name': 'News Category'
@@ -97,6 +111,11 @@
         'status':
             'name': 'Status'
             'value': 0
+            'attr': []
+        'og_group_ref':
+            'name': 'Library'
+            'value':
+                - Theta
             'attr': []
     'taxonomy':
         'field_ding_news_category':

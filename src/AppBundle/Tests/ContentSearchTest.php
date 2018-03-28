@@ -27,9 +27,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request(self::URI, $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $result = json_decode($response->getContent(), true);
+        $result = $this->assertResponse($response);
 
         $this->assertFalse($result['status']);
         $this->assertCount(0, $result['items']);
@@ -49,11 +47,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request(self::URI, $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
         $this->assertCount(3, $result['items']);
 
@@ -76,11 +71,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request(self::URI, $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
         $this->assertCount(7, $result['items']);
 
@@ -103,11 +95,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         /** @var Response $response */
         $response = $this->request(self::URI, $parameters, 'GET');
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $result = $this->assertResponse($response);
 
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
         $this->assertCount(7, $result['items']);
 
@@ -200,8 +189,20 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         $this->assertArrayHasKey('nid', $item);
         $this->assertArrayHasKey('title', $item);
         $this->assertArrayHasKey('changed', $item);
-        // Attempt to parse a meaningful date format.
-        $this->assertInternalType('int', strtotime($item['changed']));
+        $this->assertArrayHasKey('type', $item);
+        // Attempt to parse a meaningful date format, also it has to be in ISO-8601 format.
+        $this->assertIsoDate($item['changed']);
+
+        // Events have date in response.
+        if ('ding_event' == $item['type']) {
+            $this->assertArrayHasKey('event_date', $item);
+            $this->assertArrayHasKey('from', $item['event_date']);
+            $this->assertIsoDate($item['event_date']['from']);
+            $this->assertArrayHasKey('to', $item['event_date']);
+            $this->assertIsoDate($item['event_date']['to']);
+            $this->assertArrayHasKey('all_day', $item['event_date']);
+            $this->assertInternalType('boolean', $item['event_date']['all_day']);
+        }
     }
 
     /**
