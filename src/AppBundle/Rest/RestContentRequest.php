@@ -76,6 +76,7 @@ class RestContentRequest extends RestBaseRequest
      * @param array $terms
      * @param int $upcoming
      * @param array $libraries
+     * @param string $status
      *
      * @return Content[]
      */
@@ -90,7 +91,8 @@ class RestContentRequest extends RestBaseRequest
         array $vocabularies = null,
         array $terms = null,
         $upcoming = 0,
-        array $libraries = null
+        array $libraries = null,
+        $status = self::STATUS_PUBLISHED
     ) {
         if (!empty($node)) {
             return $this->fetchContent(explode(',', $node), $agency);
@@ -151,6 +153,15 @@ class RestContentRequest extends RestBaseRequest
             $qb->field('fields.og_group_ref.value')->in($libraries);
         }
 
+        $possibleStatuses = [
+            self::STATUS_ALL,
+            self::STATUS_PUBLISHED,
+            self::STATUS_UNPUBLISHED,
+        ];
+        if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
+            $qb->field('fields.status.value')->equals($status);
+        }
+
         $qb->skip($skip)->limit($amount);
 
         return $qb->getQuery()->execute();
@@ -164,7 +175,7 @@ class RestContentRequest extends RestBaseRequest
      * @param string $field
      * @param int $amount
      * @param int $skip
-     * @param int $status
+     * @param string $status
      * @param boolean $upcoming
      *
      * @return Content[]
@@ -175,7 +186,7 @@ class RestContentRequest extends RestBaseRequest
         $field = 'fields.title.value',
         $amount = 10,
         $skip = 0,
-        $status = 1,
+        $status = self::STATUS_PUBLISHED,
         $upcoming = false
     )
     {

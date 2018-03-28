@@ -73,10 +73,8 @@ final class RestController extends Controller
      *      "dataType"="string",
      *      "required"=false,
      *      "description"="A single node id or a set of id's separated by comma. Using this parameter ignores any parameters below."
-     *    }
-     *  },
-     *  parameters={
-     *     {
+     *    },
+     *    {
      *      "name"="amount",
      *      "dataType"="integer",
      *      "required"=false,
@@ -130,6 +128,12 @@ final class RestController extends Controller
      *       "dataType"="string",
      *       "description"="Library name. Filters the nodes only attached to this library. Can be multiple, e.g. library[]='Alpha'&library[]='Beta'",
      *       "required"=false
+     *     },
+     *     {
+     *       "name"="status",
+     *       "dataType"="string",
+     *       "required"=false,
+     *       "description"="Filter results by status. `0` - unpublished, `1` - published, `-1` - all. Default: 1."
      *     }
      *  }
      * )
@@ -153,10 +157,11 @@ final class RestController extends Controller
             'terms' => [],
             'upcoming' => 0,
             'library' => [],
+            'status' => RestContentRequest::STATUS_PUBLISHED,
         ];
 
         foreach (array_keys($fields) as $field) {
-            $fields[$field] = !empty($request->query->get($field)) ? $request->query->get($field) : $fields[$field];
+            $fields[$field] = $request->query->get($field) ?? $fields[$field];
         }
 
         if (empty($fields['agency'])) {
