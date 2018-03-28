@@ -10,16 +10,17 @@ use AppBundle\Document\Lists as FSList;
 
 class RestListsRequest extends RestBaseRequest
 {
+
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);
 
         $this->primaryIdentifier = 'key';
-        $this->requiredFields = array(
+        $this->requiredFields = [
             $this->primaryIdentifier,
             'agency',
             'nid',
-        );
+        ];
     }
 
     protected function exists($id, $agency)
@@ -31,10 +32,10 @@ class RestListsRequest extends RestBaseRequest
 
     protected function get($id, $agency)
     {
-        $criteria = array(
+        $criteria = [
             $this->primaryIdentifier => $id,
             'agency' => $agency,
-        );
+        ];
 
         $entity = $this->em
             ->getRepository('AppBundle:Lists')
@@ -92,13 +93,13 @@ class RestListsRequest extends RestBaseRequest
         $name = !empty($body['name']) ? $body['name'] : 'Undefined';
         $list->setName($name);
 
-        $nids = !empty($body['nids']) ? $body['nids'] : array();
+        $nids = !empty($body['nids']) ? $body['nids'] : [];
         $list->setNids($nids);
 
-        $type = !empty($body['type']) ? $body['type'] : array();
+        $type = !empty($body['type']) ? $body['type'] : [];
         $list->setType($type);
 
-        $promoted = !empty($body['promoted']) ? $body['promoted'] : array();
+        $promoted = !empty($body['promoted']) ? $body['promoted'] : [];
         $list->setPromoted($promoted);
 
         $weight = !empty($body['weight']) ? $body['weight'] : 0;
