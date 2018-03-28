@@ -318,7 +318,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertCount(1, $result['items']);
 
         $event_node = reset($result['items']);
-        $event_unixtime = strtotime($event_node['fields']['field_ding_event_date']['value']['to']);
+        $event_unixtime = strtotime($event_node['fields']['field_ding_event_date']['value']['from']);
         $this->assertNotEquals(-1, $event_unixtime);
         $this->assertGreaterThan(time(), $event_unixtime);
 

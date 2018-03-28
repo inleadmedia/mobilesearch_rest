@@ -13,6 +13,12 @@ use Symfony\Component\Filesystem\Filesystem as FSys;
 
 class RestContentRequest extends RestBaseRequest
 {
+    const STATUS_ALL = '-1';
+
+    const STATUS_PUBLISHED = '1';
+
+    const STATUS_UNPUBLISHED = '0';
+
     /**
      * RestContentRequest constructor.
      *
@@ -156,10 +162,22 @@ class RestContentRequest extends RestBaseRequest
      * @param string $agency
      * @param string $query
      * @param string $field
+     * @param int $amount
+     * @param int $skip
+     * @param int $status
+     * @param boolean $upcoming
      *
      * @return Content[]
      */
-    public function fetchSuggestions($agency, $query, $field = 'fields.title.value', $amount = 10, $skip = 0)
+    public function fetchSuggestions(
+        $agency,
+        $query,
+        $field = 'fields.title.value',
+        $amount = 10,
+        $skip = 0,
+        $status = 1,
+        $upcoming = false
+    )
     {
         $qb = $this->em
             ->getManager()
@@ -168,6 +186,19 @@ class RestContentRequest extends RestBaseRequest
             ->field($field)->equals(new \MongoRegex('/'.$query.'/i'))
             ->skip($skip)
             ->limit($amount);
+
+        $possibleStatuses = [
+            self::STATUS_ALL,
+            self::STATUS_PUBLISHED,
+            self::STATUS_UNPUBLISHED,
+        ];
+        if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
+            $qb->field('fields.status.value')->equals($status);
+        }
+
+        if ('type' == $field && 'ding_event' == $query && $upcoming) {
+            $qb->field('fields.field_ding_event_date.value.to')->gte(date(RestHelper::ISO8601, time()));
+        }
 
         return $qb->getQuery()->execute();
     }

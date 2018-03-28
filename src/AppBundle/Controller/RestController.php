@@ -239,7 +239,9 @@ final class RestController extends Controller
      *       "name"="query",
      *       "dataType"="string",
      *       "description"="The search query."
-     *     },
+     *     }
+     *   },
+     *   filters={
      *     {
      *       "name"="amount",
      *       "dataType"="integer",
@@ -251,6 +253,18 @@ final class RestController extends Controller
      *       "dataType"="integer",
      *       "required"=false,
      *       "description"="Fetch the result set starting from this record. Default: 0."
+     *     },
+     *     {
+     *       "name"="status",
+     *       "dataType"="string",
+     *       "required"=false,
+     *       "description"="Filter results by status. `0` - unpublished, `1` - published, `-1` - all. Default: 1."
+     *     },
+     *     {
+     *       "name"="upcoming",
+     *       "dataType"="boolean",
+     *       "required"=false,
+     *       "description"="Fetch only upcoming events. Viable when 'field=type & query=ding_event'. Default: 1."
      *     }
      *   }
      * )
@@ -265,6 +279,8 @@ final class RestController extends Controller
             'query' => null,
             'amount' => 10,
             'skip' => 0,
+            'status' => RestContentRequest::STATUS_PUBLISHED,
+            'upcoming' => 1,
         ];
 
         foreach (array_keys($fields) as $field) {
@@ -284,7 +300,9 @@ final class RestController extends Controller
                 $fields['query'],
                 $fields['field'],
                 $fields['amount'],
-                $fields['skip']
+                $fields['skip'],
+                $fields['status'],
+                $fields['upcoming']
             );
 
             /** @var Content $suggestion */
@@ -296,6 +314,7 @@ final class RestController extends Controller
                     'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
                     'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
                     'type' => $suggestion->getType(),
+                    'status' => $fields['status']['value'],
                 ];
 
                 if ('ding_event' == $suggestion->getType()) {
