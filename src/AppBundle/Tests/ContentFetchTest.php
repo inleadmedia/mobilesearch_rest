@@ -4,10 +4,13 @@ namespace AppBundle\Tests;
 
 use AppBundle\DataFixtures\MongoDB\AgencyFixtures;
 use AppBundle\DataFixtures\MongoDB\ContentFixtures;
+use AppBundle\Rest\RestContentRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContentFetchTest extends AbstractFixtureAwareTest
 {
+    const AGENCY = '999999';
+
     use AssertResponseStructureTrait;
 
     /**
@@ -34,7 +37,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
     public function testFetchByNid()
     {
         $nid = 1000;
-        $agency = '999999';
+        $agency = self::AGENCY;
         $parameters = [
             'agency' => $agency,
             'node' => $nid,
@@ -56,7 +59,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testFetchByType()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $type = 'ding_news';
         $parameters = [
             'agency' => $agency,
@@ -69,7 +72,6 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertNotEmpty($result['items']);
-        $this->assertEquals(3, count($result['items']));
 
         foreach ($result['items'] as $item) {
             $this->assertEquals($type, $item['type']);
@@ -82,11 +84,12 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testFetchByLibrary()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $libraries = ['Alpha'];
         $parameters = [
             'agency' => $agency,
             'library' => $libraries,
+            'status' => RestContentRequest::STATUS_ALL,
         ];
 
         /** @var Response $response */
@@ -124,7 +127,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testFetchAll()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $parameters = [
             'agency' => $agency,
         ];
@@ -148,7 +151,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testFetchSmallAmount()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $amount = 2;
         $parameters = [
             'agency' => $agency,
@@ -168,13 +171,14 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testPager()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $skip = 0;
         $amount = 2;
         $parameters = [
             'agency' => $agency,
             'amount' => $amount,
             'skip' => $skip,
+            'status' => RestContentRequest::STATUS_ALL,
         ];
 
         $node_ids = [];
@@ -212,7 +216,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testSorting()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $sort = 'nid';
         $order = 'ASC';
         $parameters = [
@@ -253,7 +257,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testNestedFieldSorting()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $sort = 'fields.title.value';
         $order = 'ASC';
         $parameters = [
@@ -300,13 +304,14 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testUpcomingEvents()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $type = 'ding_event';
         $upcoming = true;
         $parameters = [
             'agency' => $agency,
             'type' => $type,
             'upcoming' => $upcoming,
+            'status' => RestContentRequest::STATUS_ALL,
         ];
 
         // Upcoming only.
@@ -338,7 +343,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testTaxonomyFiltering()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $parameters = [
             'agency' => $agency,
             'vocabulary' => [
@@ -355,16 +360,13 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $result = $this->assertResponse($response);
 
-        $this->assertCount(1, $result['items']);
-
         $found = [];
         foreach ($result['items'] as $item) {
             if ($this->keyExists($item['taxonomy']['field_ding_event_category']['terms'], 'Theta')) {
                 $found[] = $item['nid'];
             }
         }
-
-        $this->assertCount(1, $found);
+        $this->assertNotEmpty($found);
 
         // Check for nodes with 'Alpha' term.
         $parameters['terms'] = [
@@ -376,16 +378,13 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $result = $this->assertResponse($response);
 
-        $this->assertCount(3, $result['items']);
-
         $found = [];
         foreach ($result['items'] as $item) {
             if ($this->keyExists($item['taxonomy']['field_ding_event_category']['terms'], 'Alpha')) {
                 $found[] = $item['nid'];
             }
         }
-
-        $this->assertCount(3, $found);
+        $this->assertNotEmpty($found);
 
         // Check for nodes with either 'Delta' or 'Theta' terms.
         $parameters['vocabulary'] = [
@@ -403,17 +402,13 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $result = $this->assertResponse($response);
 
-        $this->assertCount(2, $result['items']);
-
         $found = [];
         foreach ($result['items'] as $item) {
             if ($this->keyExists($item['taxonomy']['field_ding_event_category']['terms'], 'Delta')) {
                 $found[] = $item['nid'];
             }
         }
-
-        // Fixtures have two nodes with 'Delta' category terms.
-        $this->assertCount(2, $found);
+        $this->assertNotEmpty($found);
 
         $found = [];
         foreach ($result['items'] as $item) {
@@ -421,9 +416,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
                 $found[] = $item['nid'];
             }
         }
-
-        // Fixtures have one node with 'Theta' category term.
-        $this->assertCount(1, $found);
+        $this->assertNotEmpty($found);
     }
 
     /**
@@ -431,7 +424,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
      */
     public function testFetchComplex()
     {
-        $agency = '999999';
+        $agency = self::AGENCY;
         $type = 'ding_news';
         $amount = 2;
         $skip = 1;
@@ -452,6 +445,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             'order' => $order,
             'vocabulary' => $vocabulary,
             'terms' => $terms,
+            'status' => RestContentRequest::STATUS_ALL,
         ];
 
         /** @var Response $response */
@@ -476,6 +470,82 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $comparison = strcmp($first_node['fields']['title']['value'], $second_node['fields']['title']['value']);
             $this->assertLessThan(0, $comparison);
         }
+    }
+
+    /**
+     * Fetches default set of published content.
+     */
+    public function testDefaultStatus()
+    {
+        $parameters = [
+            'agency' => self::AGENCY,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $status = $item['fields']['status']['value'];
+            $this->assertEquals(RestContentRequest::STATUS_PUBLISHED, $status);
+        }
+    }
+
+    /**
+     * Fetches content filtered by status.
+     */
+    public function testFetchByStatus()
+    {
+        // Fetch published content.
+        $parameters = [
+            'agency' => self::AGENCY,
+            'status' => RestContentRequest::STATUS_PUBLISHED
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        $publishedCount = count($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $status = $item['fields']['status']['value'];
+            $this->assertEquals($parameters['status'], $status);
+        }
+
+        // Fetch unpublished content.
+        $parameters['status'] = RestContentRequest::STATUS_UNPUBLISHED;
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        $unpublishedCount = count($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $status = $item['fields']['status']['value'];
+            $this->assertEquals($parameters['status'], $status);
+        }
+
+        // Fetch all content.
+        $parameters['status'] = RestContentRequest::STATUS_ALL;
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $this->assertEquals(count($result['items']), $publishedCount + $unpublishedCount);
     }
 
     /**
