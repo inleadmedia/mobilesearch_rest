@@ -12,28 +12,29 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  */
 class Lists
 {
+
     /**
      * @MongoDB\id
      */
     protected $id;
 
     /**
-     * @MongoDB\int
+     * @MongoDB\Field(type="int")
      */
     protected $nid;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agency;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $key;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 
@@ -43,17 +44,17 @@ class Lists
     protected $nids;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $type;
 
     /**
-     * @MongoDB\boolean
+     * @MongoDB\Field(type="boolean")
      */
     protected $promoted;
 
     /**
-     * @MongoDB\integer
+     * @MongoDB\Field(type="int")
      */
     protected $weight;
 
@@ -71,11 +72,13 @@ class Lists
      * Set nid
      *
      * @param int $nid
+     *
      * @return self
      */
     public function setNid($nid)
     {
         $this->nid = $nid;
+
         return $this;
     }
 
@@ -93,11 +96,13 @@ class Lists
      * Set agency
      *
      * @param string $agency
+     *
      * @return self
      */
     public function setAgency($agency)
     {
         $this->agency = $agency;
+
         return $this;
     }
 
@@ -115,11 +120,13 @@ class Lists
      * Set key
      *
      * @param string $key
+     *
      * @return self
      */
     public function setKey($key)
     {
         $this->key = $key;
+
         return $this;
     }
 
@@ -137,11 +144,13 @@ class Lists
      * Set name
      *
      * @param string $name
+     *
      * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -159,11 +168,13 @@ class Lists
      * Set nids
      *
      * @param collection $nids
+     *
      * @return self
      */
     public function setNids($nids)
     {
         $this->nids = $nids;
+
         return $this;
     }
 
@@ -181,11 +192,13 @@ class Lists
      * Set type
      *
      * @param string $type
+     *
      * @return self
      */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -203,11 +216,13 @@ class Lists
      * Set promoted
      *
      * @param boolean $promoted
+     *
      * @return self
      */
     public function setPromoted($promoted)
     {
         $this->promoted = $promoted;
+
         return $this;
     }
 
@@ -225,11 +240,13 @@ class Lists
      * Set weight
      *
      * @param integer $weight
+     *
      * @return self
      */
     public function setWeight($weight)
     {
         $this->weight = $weight;
+
         return $this;
     }
 

@@ -12,23 +12,24 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  */
 class Agency
 {
+
     /**
      * @MongoDB\id
      */
     protected $id;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $agencyId;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $key;
 
     /**
-     * @MongoDB\string
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 
@@ -51,11 +52,13 @@ class Agency
      * Set agencyId
      *
      * @param string $agencyId
+     *
      * @return self
      */
     public function setAgencyId($agencyId)
     {
         $this->agencyId = $agencyId;
+
         return $this;
     }
 
@@ -73,11 +76,13 @@ class Agency
      * Set key
      *
      * @param string $key
+     *
      * @return self
      */
     public function setKey($key)
     {
         $this->key = $key;
+
         return $this;
     }
 
@@ -95,11 +100,13 @@ class Agency
      * Set name
      *
      * @param string $name
+     *
      * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -117,11 +124,13 @@ class Agency
      * Set children
      *
      * @param collection $children
+     *
      * @return self
      */
     public function setChildren($children)
     {
         $this->children = $children;
+
         return $this;
     }
 
