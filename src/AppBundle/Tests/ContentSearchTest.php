@@ -173,7 +173,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             $parameters['skip'] = $skip;
         }
 
-        $this->assertCount(7, $results);
+        $this->assertCount(8, $results);
         // Expect zero, since we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }

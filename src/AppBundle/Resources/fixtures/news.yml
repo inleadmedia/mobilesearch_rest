@@ -122,3 +122,40 @@
             'name': 'News Category'
             'terms':
                 'Alpha': []
+
+-
+    'nid': ~
+    'agency': '999999'
+    'type': 'ding_news'
+    'list': []
+    'fields':
+        'title':
+            'name': 'Title'
+            'value': ~
+            'attr': []
+        'author':
+            'name': 'Author'
+            'value': ~
+            'attr': []
+        'created':
+            'name': 'Created'
+            'value': ~
+            'attr': []
+        'changed':
+            'name': 'Updated'
+            'value': ~
+            'attr': []
+        'status':
+            'name': 'Status'
+            'value': 1 # Integer type status value.
+            'attr': []
+        'og_group_ref':
+            'name': 'Library'
+            'value':
+                - Theta
+            'attr': []
+    'taxonomy':
+        'field_ding_news_category':
+            'name': 'News Category'
+            'terms':
+                'Alpha': []
