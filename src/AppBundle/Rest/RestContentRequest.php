@@ -102,13 +102,15 @@ class RestContentRequest extends RestBaseRequest
             ->getManager()
             ->createQueryBuilder(Content::class);
 
-        $qb->field('agency')->equals($agency);
+        $qb->field('agency')->in([(int)$agency, (string)$agency]);
 
         if ($type) {
             $qb->field('type')->equals($type);
 
             if ($type == 'ding_event' && $upcoming) {
-                $qb->field('fields.field_ding_event_date.value.to')->gte(date(RestHelper::ISO8601, time()));
+                $qb
+                    ->field('fields.field_ding_event_date.value.to')
+                    ->gte(date(RestHelper::ISO8601));
             }
         }
 
@@ -159,7 +161,7 @@ class RestContentRequest extends RestBaseRequest
             self::STATUS_UNPUBLISHED,
         ];
         if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
-            $qb->field('fields.status.value')->equals($status);
+            $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
 
         $qb->skip($skip)->limit($amount);
@@ -193,7 +195,7 @@ class RestContentRequest extends RestBaseRequest
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class)
-            ->field('agency')->equals($agency)
+            ->field('agency')->in([(int)$agency, (string)$agency])
             ->field($field)->equals(new \MongoRegex('/'.$query.'/i'))
             ->skip($skip)
             ->limit($amount);
@@ -204,11 +206,13 @@ class RestContentRequest extends RestBaseRequest
             self::STATUS_UNPUBLISHED,
         ];
         if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
-            $qb->field('fields.status.value')->equals($status);
+            $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
 
         if ('type' == $field && 'ding_event' == $query && $upcoming) {
-            $qb->field('fields.field_ding_event_date.value.to')->gte(date(RestHelper::ISO8601, time()));
+            $qb
+                ->field('fields.field_ding_event_date.value.to')
+                ->gte(date(RestHelper::ISO8601));
         }
 
         return $qb->getQuery()->execute();

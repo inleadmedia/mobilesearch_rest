@@ -206,7 +206,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $parameters['skip'] = $skip;
         }
 
-        $this->assertCount(7, $node_ids);
+        $this->assertCount(8, $node_ids);
         // Expect zero, since we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }
