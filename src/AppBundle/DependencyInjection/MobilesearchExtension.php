@@ -7,8 +7,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class AppExtension extends Extension
+/**
+ * Class MobilesearchExtension.
+ */
+class MobilesearchExtension extends Extension
 {
+    /**
+     * {@inheritdoc}
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new YamlFileLoader(
@@ -17,5 +23,18 @@ class AppExtension extends Extension
         );
 
         $loader->load('services.yml');
+
+        $mosConfig = new MobilesearchConfiguration($this->getAlias());
+        $config = $this->processConfiguration($mosConfig, $configs);
+
+        $container->setParameter('mobilesearch.image_full_url', $config['image_full_url']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAlias()
+    {
+        return 'mobilesearch';
     }
 }

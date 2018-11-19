@@ -1,3 +1,8 @@
 services:
-    fixture_loader:
-        class: 'AppBundle\Services\FixtureLoader'
+  fixture_loader:
+    class: 'AppBundle\Services\FixtureLoader'
+  entity_listener:
+    class: 'AppBundle\EventListener\EntityListener'
+    arguments: ['@service_container']
+    tags:
+    - { name: doctrine_mongodb.odm.event_listener, event: postLoad }
