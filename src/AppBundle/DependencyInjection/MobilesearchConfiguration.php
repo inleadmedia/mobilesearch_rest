@@ -37,7 +37,7 @@ class MobilesearchConfiguration implements ConfigurationInterface
         $root
             ->children()
                 ->booleanNode('image_full_url')
-                    ->defaultTrue()
+                    ->defaultFalse()
                 ->end()
             ->end();
 
