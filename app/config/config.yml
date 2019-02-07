@@ -101,3 +101,11 @@ nelmio_api_doc:
     request_format:
       formats:
         json: "application/json"
+
+mongo_db_migrations:
+  collection_name: "MobileSearch storage updates"
+  database_name: "%mongo_db%"
+  dir_name: "%kernel.root_dir%/../src/AppBundle/Resources/Migrations/MongoDB"
+  script_dir_name: "%kernel.root_dir%/scripts"
+  name: "MobileSearch MongoDB Migrations"
+  namespace: "AppBundle\\Resources\\MigrationsMongoDB"
