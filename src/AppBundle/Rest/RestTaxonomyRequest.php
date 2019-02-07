@@ -110,7 +110,9 @@ class RestTaxonomyRequest extends RestBaseRequest
                     $terms[] = $term;
                 }
 
-                if (!empty($children)) {
+                // Check for array argument, so nested values not
+                // being an array don't provoke fatal errors.
+                if (!empty($children) && is_array($children)) {
                     $worker($children, $value);
                 }
             }
