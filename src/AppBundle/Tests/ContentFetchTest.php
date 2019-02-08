@@ -118,7 +118,10 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertGreaterThan($previousCount, count($result['items']));
 
         foreach ($result['items'] as $item) {
-            $this->assertGreaterThanOrEqual(1, count(array_intersect($libraries, $item['fields']['og_group_ref']['value'])));
+            $this->assertGreaterThanOrEqual(
+                1,
+                count(array_intersect($libraries, $item['fields']['og_group_ref']['value']))
+            );
         }
     }
 
