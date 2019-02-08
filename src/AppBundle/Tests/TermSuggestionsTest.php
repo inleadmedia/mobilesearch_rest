@@ -115,7 +115,8 @@ class TermSuggestionsTest extends AbstractFixtureAwareTest
     /**
      * Fetches term suggestions, with a 'everything' regex.
      */
-    function testAllTermSuggestions() {
+    public function testAllTermSuggestions()
+    {
         $parameters = [
             'agency' => self::AGENCY,
             'vocabulary' => 'field_ding_event_category',
