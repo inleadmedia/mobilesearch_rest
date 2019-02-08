@@ -25,7 +25,8 @@
         "mongodb/mongodb": "@beta",
         "doctrine/mongodb": "dev-master",
         "nelmio/api-doc-bundle": "^2.13",
-        "fzaninotto/faker": "^1.7"
+        "fzaninotto/faker": "^1.7",
+        "doesntmattr/mongodb-migrations-bundle": "^2.0"
     },
     "provide": {
         "ext-mongo": "1.6.12"

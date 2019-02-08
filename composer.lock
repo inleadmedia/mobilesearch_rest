@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edafa7f777992ae8be2882e6ff01af6a",
+    "content-hash": "507532d090873613f1c017ea586f25ae",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1014,12 +1014,12 @@
             "version": "v2.5.14",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
+                "url": "https://github.com/doctrine/orm.git",
                 "reference": "810a7baf81462a5ddf10e8baa8cb94b6eec02754"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/810a7baf81462a5ddf10e8baa8cb94b6eec02754",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/810a7baf81462a5ddf10e8baa8cb94b6eec02754",
                 "reference": "810a7baf81462a5ddf10e8baa8cb94b6eec02754",
                 "shasum": ""
             },
@@ -1084,6 +1084,138 @@
                 "orm"
             ],
             "time": "2017-12-17T02:57:51+00:00"
+        },
+        {
+            "name": "doesntmattr/mongodb-migrations",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doesntmattr/mongodb-migrations.git",
+                "reference": "0607e7ed3f5840c45e42b35f79dacda4fe8f8837"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doesntmattr/mongodb-migrations/zipball/0607e7ed3f5840c45e42b35f79dacda4fe8f8837",
+                "reference": "0607e7ed3f5840c45e42b35f79dacda4fe8f8837",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/mongodb": "^1.0",
+                "php": "^7.1",
+                "symfony/console": "^2.7|^3.3|^4",
+                "symfony/yaml": "^2.7|^3.3|^4"
+            },
+            "conflict": {
+                "antimattr/mongodb-migrations": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "mikey179/vfsstream": "1.*",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AntiMattr\\": "src/AntiMattr"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthew Fitzgerald",
+                    "email": "matthewfitz@gmail.com"
+                },
+                {
+                    "name": "Ryan Catlin",
+                    "email": "ryan.catlin@gmail.com"
+                }
+            ],
+            "description": "Managed Database Migrations for MongoDB",
+            "homepage": "http://github.com/doesntmattr/mongodb-migrations",
+            "keywords": [
+                "antimattr",
+                "database",
+                "doctrine",
+                "doesntmattr",
+                "migration",
+                "mongodb"
+            ],
+            "time": "2018-05-06T12:49:28+00:00"
+        },
+        {
+            "name": "doesntmattr/mongodb-migrations-bundle",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doesntmattr/mongodb-migrations-bundle.git",
+                "reference": "7e0d34e1e5c5021173ba19ae7b961e4e2433c6ff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doesntmattr/mongodb-migrations-bundle/zipball/7e0d34e1e5c5021173ba19ae7b961e4e2433c6ff",
+                "reference": "7e0d34e1e5c5021173ba19ae7b961e4e2433c6ff",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/mongodb-odm": "^1.0",
+                "doesntmattr/mongodb-migrations": "^2.0",
+                "php": "^7.1",
+                "symfony/config": "^2.7 || ^3.3 || ^4.0",
+                "symfony/console": "^2.7 || ^3.3 || ^4.0",
+                "symfony/dependency-injection": "^2.7 || ^3.3 || ^4.0",
+                "symfony/http-kernel": "^2.7 || ^3.3 || ^4.0"
+            },
+            "conflict": {
+                "antimattr/mongodb-migrations-bundle": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AntiMattr\\Bundle\\MongoDBMigrationsBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthew Fitzgerald",
+                    "email": "matthewfitz@gmail.com"
+                }
+            ],
+            "description": "Symfony MongoDBMigrationsBundle",
+            "homepage": "http://github.com/doesntmattr/mongodb-migrations-bundle",
+            "keywords": [
+                "antimattr",
+                "database",
+                "doctrine",
+                "doesntmattr",
+                "migration",
+                "mongodb",
+                "symfony"
+            ],
+            "time": "2018-12-04T09:09:47+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -2067,6 +2199,7 @@
                 "compression",
                 "minification"
             ],
+            "abandoned": "symfony/webpack-encore-pack",
             "time": "2017-07-14T07:26:46+00:00"
         },
         {
