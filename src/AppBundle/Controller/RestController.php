@@ -166,8 +166,7 @@ final class RestController extends Controller
 
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
-        }
-        else {
+        } else {
             $em = $this->get('doctrine_mongodb');
             $rcr = new RestContentRequest($em);
 

@@ -190,8 +190,7 @@ class RestContentRequest extends RestBaseRequest
         $skip = 0,
         $status = self::STATUS_PUBLISHED,
         $upcoming = false
-    )
-    {
+    ) {
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class)
