@@ -102,6 +102,11 @@ class RestTaxonomyRequest extends RestBaseRequest
             ->getQuery()->execute();
 
         $terms = [];
+
+        // In the query above we only found the content entities that match
+        // the query. Now, we actually search again within the result to
+        // get the terms.
+
         // Recursive worker to find nested values.
         $worker = function (array $data, $value) use (&$worker, &$terms) {
             foreach ($data as $term => $children) {
@@ -127,7 +132,7 @@ class RestTaxonomyRequest extends RestBaseRequest
             }
         }
 
-        $terms = array_values(array_unique($terms));
+        $terms = array_values(array_filter(array_unique($terms)));
 
         return $terms;
     }

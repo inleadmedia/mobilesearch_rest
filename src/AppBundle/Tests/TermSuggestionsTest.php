@@ -84,7 +84,7 @@ class TermSuggestionsTest extends AbstractFixtureAwareTest
             'agency' => self::AGENCY,
             'vocabulary' => 'field_ding_event_category',
             'content_type' => 'ding_event',
-            'query' => 'a'
+            'query' => 'a',
         ];
 
         $uri = implode('/', [
@@ -110,6 +110,51 @@ class TermSuggestionsTest extends AbstractFixtureAwareTest
         foreach ($terms as $term) {
             $this->assertContains($parameters['query'], $term, '', true);
         }
+    }
+
+    /**
+     * Fetches term suggestions, with a 'everything' regex.
+     */
+    function testAllTermSuggestions() {
+        $parameters = [
+            'agency' => self::AGENCY,
+            'vocabulary' => 'field_ding_event_category',
+            'content_type' => 'ding_event',
+            // Regex to match anything.
+            'query' => '.*',
+        ];
+
+        $uri = implode('/', [
+            self::URI,
+            $parameters['vocabulary'],
+            $parameters['content_type'],
+            $parameters['query'],
+        ]);
+
+        /** @var Response $response */
+        $response = $this->request($uri, $parameters, 'GET');
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertResponseStructure($result);
+
+        // These are pre-defined in the fixture file.
+        // @see src/AppBundle/Resources/fixtures/events.yml
+        $termsToFind = [
+            'Alpha',
+            'Beta',
+            'Gamma',
+            'Delta',
+            'Epsilon',
+            'Zeta',
+            'Eta',
+            'Theta',
+        ];
+        $terms = $result['items'];
+        $this->assertArraySubset($terms, $termsToFind);
+        $this->assertCount(count($termsToFind), $terms);
     }
 
     /**
