@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./vendor/phpunit/phpunit/phpunit -c app
+php5.6 ./vendor/phpunit/phpunit/phpunit -c app
