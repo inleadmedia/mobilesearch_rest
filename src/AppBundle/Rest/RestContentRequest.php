@@ -77,8 +77,9 @@ class RestContentRequest extends RestBaseRequest
      * @param int $upcoming
      * @param array $libraries
      * @param string $status
+     * @param bool $countOnly
      *
-     * @return Content[]
+     * @return int|Content[]
      */
     public function fetchFiltered(
         $agency,
@@ -92,15 +93,24 @@ class RestContentRequest extends RestBaseRequest
         array $terms = null,
         $upcoming = 0,
         array $libraries = null,
-        $status = self::STATUS_PUBLISHED
+        $status = self::STATUS_PUBLISHED,
+        $countOnly = FALSE
     ) {
         if (!empty($node)) {
-            return $this->fetchContent(explode(',', $node), $agency);
+            $nids = explode(',', $node);
+            return $this->fetchContent($nids, $agency, $countOnly);
         }
 
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class);
+
+        if ($countOnly) {
+            $qb->count();
+        }
+        else {
+            $qb->skip($skip)->limit($amount);
+        }
 
         $qb->field('agency')->in([(int)$agency, (string)$agency]);
 
@@ -164,8 +174,6 @@ class RestContentRequest extends RestBaseRequest
             $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
 
-        $qb->skip($skip)->limit($amount);
-
         return $qb->getQuery()->execute();
     }
 
@@ -179,8 +187,9 @@ class RestContentRequest extends RestBaseRequest
      * @param int $skip
      * @param string $status
      * @param boolean $upcoming
+     * @param boolean $countOnly
      *
-     * @return Content[]
+     * @return int|Content[]
      */
     public function fetchSuggestions(
         $agency,
@@ -189,15 +198,23 @@ class RestContentRequest extends RestBaseRequest
         $amount = 10,
         $skip = 0,
         $status = self::STATUS_PUBLISHED,
-        $upcoming = false
+        $upcoming = false,
+        $countOnly = false
     ) {
         $qb = $this->em
             ->getManager()
-            ->createQueryBuilder(Content::class)
+            ->createQueryBuilder(Content::class);
+
+        if ($countOnly) {
+            $qb->count();
+        }
+        else {
+            $qb->skip($skip)->limit($amount);
+        }
+
+        $qb
             ->field('agency')->in([(int)$agency, (string)$agency])
-            ->field($field)->equals(new \MongoRegex('/'.$query.'/i'))
-            ->skip($skip)
-            ->limit($amount);
+            ->field($field)->equals(new \MongoRegex('/'.$query.'/i'));
 
         $possibleStatuses = [
             self::STATUS_ALL,
@@ -222,10 +239,11 @@ class RestContentRequest extends RestBaseRequest
      *
      * @param array $ids
      * @param string $agency
+     * @param bool $countOnly
      *
      * @return Content[]
      */
-    public function fetchContent(array $ids, $agency)
+    public function fetchContent(array $ids, $agency, $countOnly = false)
     {
         if (empty($ids)) {
             return [];
@@ -237,16 +255,17 @@ class RestContentRequest extends RestBaseRequest
             $v = (int)$v;
         });
 
-        $criteria = [
-            'agency' => $agency,
-            'nid' => ['$in' => $ids],
-        ];
+        $qb = $this->em->getManager()
+            ->createQueryBuilder(Content::class);
 
-        $entities = $this->em
-            ->getRepository('AppBundle:Content')
-            ->findBy($criteria);
+        if ($countOnly) {
+            $qb->count();
+        }
 
-        return $entities;
+        $qb->field('agency')->equals($agency);
+        $qb->field('nid')->in($ids);
+
+        return $qb->getQuery()->execute();
     }
 
     /**
