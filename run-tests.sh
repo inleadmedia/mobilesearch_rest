@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-./vendor/phpunit/phpunit/phpunit -c app
+# Assumes php7.x
+php ./vendor/phpunit/phpunit/phpunit -c app
