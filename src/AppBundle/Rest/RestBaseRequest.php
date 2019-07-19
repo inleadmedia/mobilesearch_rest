@@ -158,7 +158,7 @@ abstract class RestBaseRequest
 
         if ($agencyEntity) {
             $children = $agencyEntity->getChildren();
-            if (in_array($childAgency, $children) || $childAgency == $this->agencyId) {
+            if ((is_array($children) && in_array($childAgency, $children)) || $childAgency == $this->agencyId) {
                 return true;
             }
         }

@@ -20,7 +20,7 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "imagine/imagine": "~0.5.0",
         "ext-mongodb": ">=1.1.2",
-        "doctrine/mongodb-odm-bundle": "dev-master",
+        "doctrine/mongodb-odm-bundle": "~3.4",
         "alcaeus/mongo-php-adapter": "^1.1",
         "mongodb/mongodb": "@beta",
         "doctrine/mongodb": "dev-master",
