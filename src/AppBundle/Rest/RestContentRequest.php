@@ -77,11 +77,8 @@ class RestContentRequest extends RestBaseRequest
      * @param int $upcoming
      * @param array $libraries
      * @param string $status
-<<<<<<< Updated upstream
      * @param bool $countOnly
-=======
      * @param string $language
->>>>>>> Stashed changes
      *
      * @return int|Content[]
      */
