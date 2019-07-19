@@ -24,6 +24,10 @@
             'name': 'Status'
             'value': '1'
             'attr': []
+        'language':
+            'name': 'Language'
+            'value': 'az'
+            'attr': []
         'field_ding_event_date':
             'name': 'Event date'
             'value':

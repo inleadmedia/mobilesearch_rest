@@ -24,6 +24,10 @@
             'name': 'Status'
             'value': '1'
             'attr': []
+        'language':
+            'name': 'Language'
+            'value': 'az'
+            'attr': []
         'og_group_ref':
             'name': 'Library'
             'value':
