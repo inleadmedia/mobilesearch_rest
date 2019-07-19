@@ -180,8 +180,6 @@ class RestContentRequest extends RestBaseRequest
             $qb->field('fields.language.value')->equals($language);
         }
 
-        $qb->skip($skip)->limit($amount);
-
         return $qb->getQuery()->execute();
     }
 
