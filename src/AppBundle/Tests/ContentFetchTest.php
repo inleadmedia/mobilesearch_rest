@@ -29,6 +29,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertFalse($result['status']);
         $this->assertEmpty($result['items']);
+        $this->assertEquals(0, $result['hits']);
     }
 
     /**
@@ -52,6 +53,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertEquals(1, count($result['items']));
         $this->assertEquals($nid, $result['items'][0]['nid']);
         $this->assertEquals($agency, $result['items'][0]['agency']);
+        $this->assertEquals(1, $result['hits']);
     }
 
     /**
@@ -77,6 +79,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $this->assertEquals($type, $item['type']);
             $this->assertEquals($agency, $item['agency']);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -123,6 +127,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
                 count(array_intersect($libraries, $item['fields']['og_group_ref']['value']))
             );
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -147,6 +153,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         foreach ($result['items'] as $item) {
             $this->assertEquals($agency, $item['agency']);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -167,6 +175,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertNotEmpty($result['items']);
         $this->assertEquals($amount, count($result['items']));
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -197,6 +206,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             }
 
             $this->assertLessThanOrEqual($amount, count($result['items']));
+            $this->assertGreaterThan(0, $result['hits']);
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -253,6 +263,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         for ($i = 1; $i < count($result['items']); $i++) {
             $this->assertLessThan($result['items'][$i - 1][$sort], $result['items'][$i][$sort]);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -300,6 +312,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $comparison = strcmp($first_node['fields']['title']['value'], $second_node['fields']['title']['value']);
             $this->assertLessThan(0, $comparison);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -339,6 +353,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertCount(4, $result['items']);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -420,6 +435,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             }
         }
         $this->assertNotEmpty($found);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -473,6 +489,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $comparison = strcmp($first_node['fields']['title']['value'], $second_node['fields']['title']['value']);
             $this->assertLessThan(0, $comparison);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -495,6 +513,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $status = $item['fields']['status']['value'];
             $this->assertEquals(RestContentRequest::STATUS_PUBLISHED, $status);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -549,6 +569,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertNotEmpty($result['items']);
         $this->assertEquals(count($result['items']), $publishedCount + $unpublishedCount);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**

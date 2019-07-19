@@ -164,6 +164,8 @@ final class RestController extends Controller
             $fields[$field] = null !== $request->query->get($field) ? $request->query->get($field) : $fields[$field];
         }
 
+        $hits = 0;
+
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
         } else {
@@ -216,9 +218,18 @@ final class RestController extends Controller
 
                 $this->lastStatus = true;
             }
+
+            // Fetch the actual hit count.
+            $fields['countOnly'] = true;
+            $hits = call_user_func_array([$rcr, 'fetchFiltered'], $fields);
         }
 
-        return $this->setResponse($this->lastStatus, $this->lastMessage, $this->lastItems);
+        return $this->setResponse(
+            $this->lastStatus,
+            $this->lastMessage,
+            $this->lastItems,
+            $hits
+        );
     }
 
     /**
@@ -279,8 +290,8 @@ final class RestController extends Controller
 
         $fields = [
             'agency' => null,
-            'field' => null,
             'query' => null,
+            'field' => null,
             'amount' => 10,
             'skip' => 0,
             'status' => RestContentRequest::STATUS_PUBLISHED,
@@ -293,44 +304,41 @@ final class RestController extends Controller
 
         $em = $this->get('doctrine_mongodb');
         $rcr = new RestContentRequest($em);
+        $hits = 0;
 
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
         } elseif (!empty($fields['query'])) {
             $this->lastItems = [];
 
-            $suggestions = $rcr->fetchSuggestions(
-                $fields['agency'],
-                $fields['query'],
-                $fields['field'],
-                $fields['amount'],
-                $fields['skip'],
-                $fields['status'],
-                $fields['upcoming']
-            );
+            $suggestions = call_user_func_array([$rcr, 'fetchSuggestions'], $fields);
 
             /** @var Content $suggestion */
             foreach ($suggestions as $suggestion) {
-                $fields = $suggestion->getFields();
+                $_fields = $suggestion->getFields();
                 $item = [
                     'id' => $suggestion->getId(),
                     'nid' => $suggestion->getNid(),
-                    'title' => isset($fields['title']['value']) ? $fields['title']['value'] : '',
-                    'changed' => isset($fields['changed']['value']) ? $fields['changed']['value'] : '',
+                    'title' => isset($_fields['title']['value']) ? $_fields['title']['value'] : '',
+                    'changed' => isset($_fields['changed']['value']) ? $_fields['changed']['value'] : '',
                     'type' => $suggestion->getType(),
-                    'status' => $fields['status']['value'],
+                    'status' => $_fields['status']['value'],
                 ];
 
                 if ('ding_event' == $suggestion->getType()) {
                     $item['event_date'] = [
-                        'from' => $fields['field_ding_event_date']['value']['from'],
-                        'to' => $fields['field_ding_event_date']['value']['to'],
-                        'all_day' => isset($fields['field_ding_event_date']['attr']['all_day']) ? $fields['field_ding_event_date']['attr']['all_day'] : false,
+                        'from' => $_fields['field_ding_event_date']['value']['from'],
+                        'to' => $_fields['field_ding_event_date']['value']['to'],
+                        'all_day' => isset($_fields['field_ding_event_date']['attr']['all_day']) ? $_fields['field_ding_event_date']['attr']['all_day'] : false,
                     ];
                 }
 
                 $this->lastItems[] = $item;
             }
+
+            // Fetch the actual hit count.
+            $fields['countOnly'] = true;
+            $hits = call_user_func_array([$rcr, 'fetchSuggestions'], $fields);
 
             $this->lastStatus = true;
         }
@@ -338,7 +346,8 @@ final class RestController extends Controller
         return $this->setResponse(
             $this->lastStatus,
             $this->lastMessage,
-            $this->lastItems
+            $this->lastItems,
+            $hits
         );
     }
 
@@ -462,6 +471,18 @@ final class RestController extends Controller
         );
     }
 
+    /**
+     * Relays request for further processing.
+     *
+     * This method is used whenever records are altered, i.e. everywhere
+     * except GET requests.
+     *
+     * @param RestBaseRequest $rbr
+     *   Base request object instance.
+     *
+     * @return Response
+     *   Response object.
+     */
     private function relay(RestBaseRequest $rbr)
     {
         try {
@@ -478,13 +499,33 @@ final class RestController extends Controller
         return $this->setResponse($this->lastStatus, $this->lastMessage);
     }
 
-    private function setResponse($status = true, $message = '', $items = [])
+    /**
+     * Assembled the response object.
+     *
+     * @param bool $status
+     *   Request status.
+     * @param string $message
+     *   Request service message, if any.
+     * @param array $items
+     *   Response items, uf any.
+     * @param null $hits
+     *   Number of hits, if any.
+     *
+     * @return Response
+     *   Response object.
+     */
+    private function setResponse($status = true, $message = '', $items = [], $hits = NULL)
     {
         $responseContent = [
             'status' => $status,
             'message' => $message,
             'items' => $items,
         ];
+
+        // Only include hit count when there are actual items.
+        if (NULL !== $hits) {
+            $responseContent['hits'] = $hits;
+        }
 
         $response = new Response(json_encode($responseContent));
         $response->headers->set('Content-Type', 'application/json');

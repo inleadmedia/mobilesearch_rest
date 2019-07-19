@@ -32,6 +32,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
 
         $this->assertFalse($result['status']);
         $this->assertCount(0, $result['items']);
+        $this->assertEquals(0, $result['hits']);
     }
 
     /**
@@ -56,6 +57,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             $this->assertItemStructure($item);
             $this->assertEquals($parameters['query'], $item[$parameters['field']]);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -83,6 +86,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             $this->assertGreaterThanOrEqual(0, $position);
             $this->assertNotFalse($position);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -107,6 +112,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             $this->assertItemStructure($item);
             $this->assertEquals(1, preg_match('/'.$parameters['query'].'/i', $item['title']));
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -131,6 +138,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         $this->assertResponseStructure($result);
         $this->assertTrue($result['status']);
         $this->assertCount($amount, $result['items']);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -162,6 +170,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             }
 
             $this->assertLessThanOrEqual($amount, count($result['items']));
+            $this->assertGreaterThan(0, $result['hits']);
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -230,6 +239,7 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         // Assume that a sum of published and unpublished nodes is the correct
         // number of nodes that exist.
         $this->assertEquals($allCount, $unpublishedCount + $publishedCount);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -257,6 +267,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
             $this->assertNotEquals(-1, $event_unixtime);
             $this->assertGreaterThan(time(), $event_unixtime);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -280,6 +292,8 @@ class ContentSearchTest extends AbstractFixtureAwareTest
         foreach ($result['items'] as $item) {
             $this->assertEquals(RestContentRequest::STATUS_PUBLISHED, $item['status']);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
