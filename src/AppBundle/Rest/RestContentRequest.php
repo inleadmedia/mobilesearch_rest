@@ -77,7 +77,11 @@ class RestContentRequest extends RestBaseRequest
      * @param int $upcoming
      * @param array $libraries
      * @param string $status
+<<<<<<< Updated upstream
      * @param bool $countOnly
+=======
+     * @param string $language
+>>>>>>> Stashed changes
      *
      * @return int|Content[]
      */
@@ -94,6 +98,7 @@ class RestContentRequest extends RestBaseRequest
         $upcoming = 0,
         array $libraries = null,
         $status = self::STATUS_PUBLISHED,
+        $language = null,
         $countOnly = FALSE
     ) {
         if (!empty($node)) {
@@ -173,6 +178,12 @@ class RestContentRequest extends RestBaseRequest
         if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
             $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
+
+        if ($language) {
+            $qb->field('fields.language.value')->equals($language);
+        }
+
+        $qb->skip($skip)->limit($amount);
 
         return $qb->getQuery()->execute();
     }

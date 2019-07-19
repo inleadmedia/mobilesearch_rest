@@ -573,6 +573,28 @@ class ContentFetchTest extends AbstractFixtureAwareTest
     }
 
     /**
+     * Fetches content filtered by langcode.
+     */
+    public function testFetchByLanguage() {
+        $parameters = [
+            'agency' => self::AGENCY,
+            'language' => 'az',
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $language = $item['fields']['language']['value'];
+            $this->assertEquals($parameters['language'], $language);
+        }
+    }
+
+    /**
      * Recursively searches an array for a key value.
      *
      * @param array $haystack   Array to search in.
