@@ -134,6 +134,12 @@ final class RestController extends Controller
      *       "dataType"="string",
      *       "required"=false,
      *       "description"="Filter results by status. `0` - unpublished, `1` - published, `-1` - all. Default: 1."
+     *     },
+     *     {
+     *       "name"="language",
+     *       "dataType"="string",
+     *       "required"=false,
+     *       "description"="Filter results by langcode. A two character language code value."
      *     }
      *  }
      * )
@@ -158,6 +164,7 @@ final class RestController extends Controller
             'upcoming' => 0,
             'library' => [],
             'status' => RestContentRequest::STATUS_PUBLISHED,
+            'language' => null,
         ];
 
         foreach (array_keys($fields) as $field) {
