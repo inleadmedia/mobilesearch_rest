@@ -94,10 +94,10 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertNotEmpty($result['items']);
-
         $this->assertEquals($limit, count($result['items']));
         $this->assertEquals($limit, $result['hits']);
 
+        // Check the order.
         foreach ($nids as $k => $nid) {
             $this->assertEquals($nid, $result['items'][$k]['nid']);
         }
