@@ -9,6 +9,7 @@ use AppBundle\Document\Content;
 use AppBundle\Document\Content as FSContent;
 use AppBundle\Services\RestHelper;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
+use Doctrine\ODM\MongoDB\Cursor;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
 class RestContentRequest extends RestBaseRequest
@@ -271,7 +272,32 @@ class RestContentRequest extends RestBaseRequest
         $qb->field('agency')->equals($agency);
         $qb->field('nid')->in($ids);
 
-        return $qb->getQuery()->execute();
+        /** @var \Doctrine\ODM\MongoDB\Cursor $result */
+        $result = $qb->getQuery()->execute();
+
+        if ($countOnly) {
+            return $result;
+        }
+
+        $nodes = [];
+        if ($result->count() > 0) {
+            /** @var \AppBundle\Document\Content[] $_nodes */
+            $_nodes = $result->toArray();
+
+            foreach ($ids as $id) {
+                foreach ($_nodes as $k => $node) {
+                    if ($node->getNid() == $id) {
+                        $nodes[] = $node;
+                        unset($_nodes[$k]);
+                        break;
+                    }
+                }
+            }
+
+            unset($_nodes);
+        }
+
+        return $nodes;
     }
 
     /**
