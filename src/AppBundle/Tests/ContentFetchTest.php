@@ -57,6 +57,53 @@ class ContentFetchTest extends AbstractFixtureAwareTest
     }
 
     /**
+     * Fetch by multiple node ids and check sort.
+     */
+    public function testFetchByNids() {
+        $agency = self::AGENCY;
+        $parameters = [
+            'agency' => $agency,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $numItems = count($result['items']);
+
+        $limit = 4;
+        $nids = [];
+        for ($i = 0; $i < $limit; $i++) {
+            $randomKey = mt_rand(0, $numItems - 1);
+            while (in_array($result['items'][$randomKey]['nid'], $nids)) {
+                $randomKey = mt_rand(0, $numItems - 1);
+            }
+            $nids[] = $result['items'][$randomKey]['nid'];
+        }
+
+        $parameters = [
+            'agency' => $agency,
+            'node' => implode(',', $nids),
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        $this->assertEquals($limit, count($result['items']));
+        $this->assertEquals($limit, $result['hits']);
+
+        foreach ($nids as $k => $nid) {
+            $this->assertEquals($nid, $result['items'][$k]['nid']);
+        }
+    }
+
+    /**
      * Fetch by type.
      */
     public function testFetchByType()
