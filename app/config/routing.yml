@@ -2,6 +2,11 @@ app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
+v2:
+    resource: "@MobileSearchV2RestBundle/Controller/"
+    type:     annotation
+    prefix: "/api/v2"
+
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /

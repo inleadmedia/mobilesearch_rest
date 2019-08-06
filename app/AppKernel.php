@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new AntiMattr\Bundle\MongoDBMigrationsBundle\MongoDBMigrationsBundle(),
+            new MobileSearch\v2\RestBundle\MobileSearchV2RestBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
