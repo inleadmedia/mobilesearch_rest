@@ -17,7 +17,7 @@ class ImageController extends Controller {
      * @Route("/image/{name}")
      * @Method({"GET"})
      * @ApiDoc(
-     *   section="Images",
+     *   section="Image",
      *   views={"api"}
      * )
      */
