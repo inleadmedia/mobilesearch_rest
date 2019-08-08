@@ -109,3 +109,7 @@ mongo_db_migrations:
   script_dir_name: "%kernel.root_dir%/scripts"
   name: "MobileSearch MongoDB Migrations"
   namespace: "AppBundle\\Resources\\MigrationsMongoDB"
+
+mobile_search_v2_rest:
+  items_limit: 10
+  items_offset: 0

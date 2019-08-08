@@ -13,10 +13,10 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class ListController extends Controller {
 
     /**
-     * @Route("/list", name="list_collection")
+     * @Route("/lists", name="list_collection")
      * @Method({ "GET" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */
@@ -25,10 +25,10 @@ class ListController extends Controller {
     }
 
     /**
-     * @Route("/list/{id}", name="list_specific")
+     * @Route("/lists/{id}", name="list_specific")
      * @Method({ "GET" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */
@@ -37,10 +37,10 @@ class ListController extends Controller {
     }
 
     /**
-     * @Route("/list", name="list_create")
+     * @Route("/lists", name="list_create")
      * @Method({ "POST" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */
@@ -49,10 +49,10 @@ class ListController extends Controller {
     }
 
     /**
-     * @Route("/list/{id}", name="list_update")
+     * @Route("/lists/{id}", name="list_update")
      * @Method({ "PUT" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */
@@ -61,10 +61,10 @@ class ListController extends Controller {
     }
 
     /**
-     * @Route("/list/{id}", name="list_patch")
+     * @Route("/lists/{id}", name="list_patch")
      * @Method({ "PATCH" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */
@@ -73,10 +73,10 @@ class ListController extends Controller {
     }
 
     /**
-     * @Route("/list/{id}", name="list_delete")
+     * @Route("/lists/{id}", name="list_delete")
      * @Method({ "DELETE" })
      * @ApiDoc(
-     *     section="List",
+     *     section="Lists",
      *     views={ "api" }
      * )
      */

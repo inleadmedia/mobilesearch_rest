@@ -14,10 +14,10 @@ class MenuController extends Controller
 {
 
     /**
-     * @Route("/menu", name="menu_collection")
+     * @Route("/menus", name="menu_collection")
      * @Method({ "GET" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */
@@ -27,10 +27,10 @@ class MenuController extends Controller
     }
 
     /**
-     * @Route("/menu/{id}", name="menu_specific")
+     * @Route("/menus/{id}", name="menu_specific")
      * @Method({ "GET" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */
@@ -40,10 +40,10 @@ class MenuController extends Controller
     }
 
     /**
-     * @Route("/menu", name="menu_create")
+     * @Route("/menus", name="menu_create")
      * @Method({ "POST" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */
@@ -53,10 +53,10 @@ class MenuController extends Controller
     }
 
     /**
-     * @Route("/menu/{id}", name="menu_update")
+     * @Route("/menus/{id}", name="menu_update")
      * @Method({ "PUT" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */
@@ -66,10 +66,10 @@ class MenuController extends Controller
     }
 
     /**
-     * @Route("/menu/{id}", name="menu_patch")
+     * @Route("/menus/{id}", name="menu_patch")
      * @Method({ "PATCH" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */
@@ -79,10 +79,10 @@ class MenuController extends Controller
     }
 
     /**
-     * @Route("/menu/{id}", name="menu_delete")
+     * @Route("/menus/{id}", name="menu_delete")
      * @Method({ "DELETE" })
      * @ApiDoc(
-     *     section="Menu",
+     *     section="Menus",
      *     views={ "api" }
      * )
      */

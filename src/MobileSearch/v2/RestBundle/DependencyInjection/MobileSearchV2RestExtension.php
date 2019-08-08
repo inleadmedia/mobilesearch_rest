@@ -22,6 +22,9 @@ class MobileSearchV2RestExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('mobile_search_v2_rest.items_limit', $config['items_limit']);
+        $container->setParameter('mobile_search_v2_rest.items_offset', $config['items_offset']);
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

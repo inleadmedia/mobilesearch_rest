@@ -14,10 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
 class ImageController extends Controller {
 
     /**
-     * @Route("/image/{name}")
+     * @Route("/images/{name}")
      * @Method({"GET"})
      * @ApiDoc(
-     *   section="Image",
+     *   section="Images",
      *   views={"api"}
      * )
      */
