@@ -62,6 +62,12 @@ class ContentController extends Controller
      *     },
      *     filters = {
      *         {
+     *             "name"="filter[node][]",
+     *             "dataType"="string",
+     *             "required"=false,
+     *             "description"="Node id. Can be multiple, e.g.: filter[node][]=203&filter[node][]=9067."
+     *         },
+     *         {
      *             "name"="filter[type]",
      *             "dataType"="string",
      *             "required"=false,

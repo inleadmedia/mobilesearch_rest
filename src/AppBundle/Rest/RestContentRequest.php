@@ -67,7 +67,7 @@ class RestContentRequest extends RestBaseRequest
      * Fetches content that fulfills certain criteria.
      *
      * @param string $agency
-     * @param int $node
+     * @param array $nodes
      * @param int $amount
      * @param int $skip
      * @param string $sort
@@ -85,25 +85,20 @@ class RestContentRequest extends RestBaseRequest
      */
     public function fetchFiltered(
         $agency,
-        $node = null,
+        array $nodes = [],
         $amount = 10,
         $skip = 0,
         $sort = '',
         $dir = '',
         $type = null,
-        array $vocabularies = null,
-        array $terms = null,
+        array $vocabularies = [],
+        array $terms = [],
         $upcoming = 0,
-        array $libraries = null,
+        array $libraries = [],
         $status = self::STATUS_PUBLISHED,
         $language = null,
         $countOnly = FALSE
     ) {
-        if (!empty($node)) {
-            $nids = explode(',', $node);
-            return $this->fetchContent($nids, $agency, $countOnly);
-        }
-
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class);
@@ -113,6 +108,13 @@ class RestContentRequest extends RestBaseRequest
         }
         else {
             $qb->skip($skip)->limit($amount);
+        }
+
+        if (!empty($nodes)) {
+            array_walk($nodes, function (&$v) {
+                $v = (int) $v;
+            });
+            $qb->field('nid')->in($nodes);
         }
 
         $qb->field('agency')->in([(int)$agency, (string)$agency]);
@@ -239,65 +241,6 @@ class RestContentRequest extends RestBaseRequest
         }
 
         return $qb->getQuery()->execute();
-    }
-
-    /**
-     * Fetches content by id.
-     *
-     * @param array $ids
-     * @param string $agency
-     * @param bool $countOnly
-     *
-     * @return Content[]
-     */
-    public function fetchContent(array $ids, $agency, $countOnly = false)
-    {
-        if (empty($ids)) {
-            return [];
-        }
-
-        // Mongo has strict type check, and since 'nid' is stored as int
-        // convert the value to int as well.
-        array_walk($ids, function (&$v) {
-            $v = (int)$v;
-        });
-
-        $qb = $this->em->getManager()
-            ->createQueryBuilder(Content::class);
-
-        if ($countOnly) {
-            $qb->count();
-        }
-
-        $qb->field('agency')->equals($agency);
-        $qb->field('nid')->in($ids);
-
-        /** @var \Doctrine\ODM\MongoDB\Cursor $result */
-        $result = $qb->getQuery()->execute();
-
-        if ($countOnly) {
-            return $result;
-        }
-
-        $nodes = [];
-        if ($result->count() > 0) {
-            /** @var \AppBundle\Document\Content[] $_nodes */
-            $_nodes = $result->toArray();
-
-            foreach ($ids as $id) {
-                foreach ($_nodes as $k => $node) {
-                    if ($node->getNid() == $id) {
-                        $nodes[] = $node;
-                        unset($_nodes[$k]);
-                        break;
-                    }
-                }
-            }
-
-            unset($_nodes);
-        }
-
-        return $nodes;
     }
 
     /**

@@ -69,7 +69,7 @@ final class RestController extends Controller
      *  },
      *  filters={
      *    {
-     *      "name"="node",
+     *      "name"="node[]",
      *      "dataType"="string",
      *      "required"=false,
      *      "description"="A single node id or a set of id's separated by comma. Using this parameter ignores any parameters below."
@@ -153,7 +153,7 @@ final class RestController extends Controller
         // Defaults.
         $fields = [
             'agency' => null,
-            'node' => null,
+            'node' => [],
             'amount' => 10,
             'skip' => 0,
             'sort' => 'fields.created.value',
