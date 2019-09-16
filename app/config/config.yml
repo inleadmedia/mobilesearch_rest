@@ -92,7 +92,11 @@ doctrine_mongodb:
 
 # API doc.
 nelmio_api_doc:
-  name: "Mobilesearch READ-only API"
+  documentation:
+    info:
+      title: "CMSContent (READ-only API)"
+      description: "Content storage for CMS solutions. Currently supports News, Events and Libraries."
+      version: "1.5"
   sandbox:
     body_format:
       formats:
