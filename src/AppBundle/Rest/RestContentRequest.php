@@ -9,6 +9,7 @@ use AppBundle\Document\Content;
 use AppBundle\Document\Content as FSContent;
 use AppBundle\Services\RestHelper;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
+use Doctrine\ODM\MongoDB\Cursor;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
 class RestContentRequest extends RestBaseRequest
@@ -77,8 +78,10 @@ class RestContentRequest extends RestBaseRequest
      * @param int $upcoming
      * @param array $libraries
      * @param string $status
+     * @param bool $countOnly
+     * @param string $language
      *
-     * @return Content[]
+     * @return int|Content[]
      */
     public function fetchFiltered(
         $agency,
@@ -92,23 +95,35 @@ class RestContentRequest extends RestBaseRequest
         array $terms = null,
         $upcoming = 0,
         array $libraries = null,
-        $status = self::STATUS_PUBLISHED
+        $status = self::STATUS_PUBLISHED,
+        $language = null,
+        $countOnly = FALSE
     ) {
         if (!empty($node)) {
-            return $this->fetchContent(explode(',', $node), $agency);
+            $nids = explode(',', $node);
+            return $this->fetchContent($nids, $agency, $countOnly);
         }
 
         $qb = $this->em
             ->getManager()
             ->createQueryBuilder(Content::class);
 
-        $qb->field('agency')->equals($agency);
+        if ($countOnly) {
+            $qb->count();
+        }
+        else {
+            $qb->skip($skip)->limit($amount);
+        }
+
+        $qb->field('agency')->in([(int)$agency, (string)$agency]);
 
         if ($type) {
             $qb->field('type')->equals($type);
 
             if ($type == 'ding_event' && $upcoming) {
-                $qb->field('fields.field_ding_event_date.value.to')->gte(date(RestHelper::ISO8601, time()));
+                $qb
+                    ->field('fields.field_ding_event_date.value.to')
+                    ->gte(date(RestHelper::ISO8601));
             }
         }
 
@@ -159,10 +174,12 @@ class RestContentRequest extends RestBaseRequest
             self::STATUS_UNPUBLISHED,
         ];
         if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
-            $qb->field('fields.status.value')->equals($status);
+            $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
 
-        $qb->skip($skip)->limit($amount);
+        if ($language) {
+            $qb->field('fields.language.value')->equals($language);
+        }
 
         return $qb->getQuery()->execute();
     }
@@ -177,8 +194,9 @@ class RestContentRequest extends RestBaseRequest
      * @param int $skip
      * @param string $status
      * @param boolean $upcoming
+     * @param boolean $countOnly
      *
-     * @return Content[]
+     * @return int|Content[]
      */
     public function fetchSuggestions(
         $agency,
@@ -187,16 +205,23 @@ class RestContentRequest extends RestBaseRequest
         $amount = 10,
         $skip = 0,
         $status = self::STATUS_PUBLISHED,
-        $upcoming = false
-    )
-    {
+        $upcoming = false,
+        $countOnly = false
+    ) {
         $qb = $this->em
             ->getManager()
-            ->createQueryBuilder(Content::class)
-            ->field('agency')->equals($agency)
-            ->field($field)->equals(new \MongoRegex('/'.$query.'/i'))
-            ->skip($skip)
-            ->limit($amount);
+            ->createQueryBuilder(Content::class);
+
+        if ($countOnly) {
+            $qb->count();
+        }
+        else {
+            $qb->skip($skip)->limit($amount);
+        }
+
+        $qb
+            ->field('agency')->in([(int)$agency, (string)$agency])
+            ->field($field)->equals(new \MongoRegex('/'.$query.'/i'));
 
         $possibleStatuses = [
             self::STATUS_ALL,
@@ -204,11 +229,13 @@ class RestContentRequest extends RestBaseRequest
             self::STATUS_UNPUBLISHED,
         ];
         if (self::STATUS_ALL != $status && in_array($status, $possibleStatuses)) {
-            $qb->field('fields.status.value')->equals($status);
+            $qb->field('fields.status.value')->in([(int)$status, (string)$status]);
         }
 
         if ('type' == $field && 'ding_event' == $query && $upcoming) {
-            $qb->field('fields.field_ding_event_date.value.to')->gte(date(RestHelper::ISO8601, time()));
+            $qb
+                ->field('fields.field_ding_event_date.value.to')
+                ->gte(date(RestHelper::ISO8601));
         }
 
         return $qb->getQuery()->execute();
@@ -219,10 +246,11 @@ class RestContentRequest extends RestBaseRequest
      *
      * @param array $ids
      * @param string $agency
+     * @param bool $countOnly
      *
      * @return Content[]
      */
-    public function fetchContent(array $ids, $agency)
+    public function fetchContent(array $ids, $agency, $countOnly = false)
     {
         if (empty($ids)) {
             return [];
@@ -234,16 +262,42 @@ class RestContentRequest extends RestBaseRequest
             $v = (int)$v;
         });
 
-        $criteria = [
-            'agency' => $agency,
-            'nid' => ['$in' => $ids],
-        ];
+        $qb = $this->em->getManager()
+            ->createQueryBuilder(Content::class);
 
-        $entities = $this->em
-            ->getRepository('AppBundle:Content')
-            ->findBy($criteria);
+        if ($countOnly) {
+            $qb->count();
+        }
 
-        return $entities;
+        $qb->field('agency')->equals($agency);
+        $qb->field('nid')->in($ids);
+
+        /** @var \Doctrine\ODM\MongoDB\Cursor $result */
+        $result = $qb->getQuery()->execute();
+
+        if ($countOnly) {
+            return $result;
+        }
+
+        $nodes = [];
+        if ($result->count() > 0) {
+            /** @var \AppBundle\Document\Content[] $_nodes */
+            $_nodes = $result->toArray();
+
+            foreach ($ids as $id) {
+                foreach ($_nodes as $k => $node) {
+                    if ($node->getNid() == $id) {
+                        $nodes[] = $node;
+                        unset($_nodes[$k]);
+                        break;
+                    }
+                }
+            }
+
+            unset($_nodes);
+        }
+
+        return $nodes;
     }
 
     /**

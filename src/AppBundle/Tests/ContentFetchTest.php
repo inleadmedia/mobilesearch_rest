@@ -29,6 +29,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertFalse($result['status']);
         $this->assertEmpty($result['items']);
+        $this->assertEquals(0, $result['hits']);
     }
 
     /**
@@ -52,6 +53,54 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertEquals(1, count($result['items']));
         $this->assertEquals($nid, $result['items'][0]['nid']);
         $this->assertEquals($agency, $result['items'][0]['agency']);
+        $this->assertEquals(1, $result['hits']);
+    }
+
+    /**
+     * Fetch by multiple node ids and check sort.
+     */
+    public function testFetchByNids() {
+        $agency = self::AGENCY;
+        $parameters = [
+            'agency' => $agency,
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $numItems = count($result['items']);
+
+        $limit = 4;
+        $nids = [];
+        for ($i = 0; $i < $limit; $i++) {
+            $randomKey = mt_rand(0, $numItems - 1);
+            while (in_array($result['items'][$randomKey]['nid'], $nids)) {
+                $randomKey = mt_rand(0, $numItems - 1);
+            }
+            $nids[] = $result['items'][$randomKey]['nid'];
+        }
+
+        $parameters = [
+            'agency' => $agency,
+            'node' => implode(',', $nids),
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+        $this->assertEquals($limit, count($result['items']));
+        $this->assertEquals($limit, $result['hits']);
+
+        // Check the order.
+        foreach ($nids as $k => $nid) {
+            $this->assertEquals($nid, $result['items'][$k]['nid']);
+        }
     }
 
     /**
@@ -77,6 +126,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $this->assertEquals($type, $item['type']);
             $this->assertEquals($agency, $item['agency']);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -118,8 +169,13 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $this->assertGreaterThan($previousCount, count($result['items']));
 
         foreach ($result['items'] as $item) {
-            $this->assertGreaterThanOrEqual(1, count(array_intersect($libraries, $item['fields']['og_group_ref']['value'])));
+            $this->assertGreaterThanOrEqual(
+                1,
+                count(array_intersect($libraries, $item['fields']['og_group_ref']['value']))
+            );
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -144,6 +200,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         foreach ($result['items'] as $item) {
             $this->assertEquals($agency, $item['agency']);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -164,6 +222,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertNotEmpty($result['items']);
         $this->assertEquals($amount, count($result['items']));
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -194,6 +253,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             }
 
             $this->assertLessThanOrEqual($amount, count($result['items']));
+            $this->assertGreaterThan(0, $result['hits']);
 
             foreach ($result['items'] as $item) {
                 // Node id's normally should not repeat for same agency.
@@ -206,7 +266,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $parameters['skip'] = $skip;
         }
 
-        $this->assertCount(7, $node_ids);
+        $this->assertCount(8, $node_ids);
         // Expect zero, since we reached end of the list.
         $this->assertEquals(0, count($result['items']));
     }
@@ -250,6 +310,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         for ($i = 1; $i < count($result['items']); $i++) {
             $this->assertLessThan($result['items'][$i - 1][$sort], $result['items'][$i][$sort]);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -297,6 +359,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $comparison = strcmp($first_node['fields']['title']['value'], $second_node['fields']['title']['value']);
             $this->assertLessThan(0, $comparison);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -336,6 +400,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
         $result = $this->assertResponse($response);
 
         $this->assertCount(4, $result['items']);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -417,6 +482,7 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             }
         }
         $this->assertNotEmpty($found);
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -470,6 +536,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $comparison = strcmp($first_node['fields']['title']['value'], $second_node['fields']['title']['value']);
             $this->assertLessThan(0, $comparison);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -492,6 +560,8 @@ class ContentFetchTest extends AbstractFixtureAwareTest
             $status = $item['fields']['status']['value'];
             $this->assertEquals(RestContentRequest::STATUS_PUBLISHED, $status);
         }
+
+        $this->assertGreaterThan(0, $result['hits']);
     }
 
     /**
@@ -546,6 +616,29 @@ class ContentFetchTest extends AbstractFixtureAwareTest
 
         $this->assertNotEmpty($result['items']);
         $this->assertEquals(count($result['items']), $publishedCount + $unpublishedCount);
+        $this->assertGreaterThan(0, $result['hits']);
+    }
+
+    /**
+     * Fetches content filtered by langcode.
+     */
+    public function testFetchByLanguage() {
+        $parameters = [
+            'agency' => self::AGENCY,
+            'language' => 'az',
+        ];
+
+        /** @var Response $response */
+        $response = $this->request('/content/fetch', $parameters, 'GET');
+
+        $result = $this->assertResponse($response);
+
+        $this->assertNotEmpty($result['items']);
+
+        foreach ($result['items'] as $item) {
+            $language = $item['fields']['language']['value'];
+            $this->assertEquals($parameters['language'], $language);
+        }
     }
 
     /**
