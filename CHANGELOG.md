@@ -1,10 +1,49 @@
 ## Change Log
 
+### v1.8 (16/09-2019)
+- [6a8fe2c](https://github.com/inleadmedia/mobilesearch_rest/commit/6a8fe2c83fd79fd4252f05fb719410531f716cf1) MOS-29 - Typo. (@AnatolyMuntean)
+- [0e6209d](https://github.com/inleadmedia/mobilesearch_rest/commit/0e6209dc45906d5fc6a21b4479acd161103d8879) MOS-29 - Maintain order when fetching specific nodes. (@AnatolyMuntean)
+- [3ecd6eb](https://github.com/inleadmedia/mobilesearch_rest/commit/3ecd6eb17ef6ca5ed5b08d326ead7bb872efec51) ES-1799 - Typo. (@AnatolyMuntean)
+- [f2615b4](https://github.com/inleadmedia/mobilesearch_rest/commit/f2615b43a9f8650f067cd2073ac69c73a1f3af15) ES-1799 - Typo. (@AnatolyMuntean)
+- [d282522](https://github.com/inleadmedia/mobilesearch_rest/commit/d28252259708f420e590aca2719a681035ac34fe) ES-1799 - Fetch content by language. (@AnatolyMuntean)
+- [919958d](https://github.com/inleadmedia/mobilesearch_rest/commit/919958d36c43f3e5cc08bacf056684a6a32c5af4) MOS-NO_TASK - Agency check and package updates. (@AnatolyMuntean)
+- [bacd9f2](https://github.com/inleadmedia/mobilesearch_rest/commit/bacd9f214c4ab945b957f57ae89057cf3671db70) MOS-30 - Include hit count when fetching and searching content. (@AnatolyMuntean)
+- [e4202f0](https://github.com/inleadmedia/mobilesearch_rest/commit/e4202f02c7dfae9daafc5e2d57f0e1b1f3b9c814) MOS-28 - Minor PSR2 compliance. (@AnatolyMuntean)
+- [e88394f](https://github.com/inleadmedia/mobilesearch_rest/commit/e88394fcdb3fde819137f8fa97c1dbf9c35f7df2) MOS-28 - Migrations bundle. (@AnatolyMuntean)
+- [3e123c3](https://github.com/inleadmedia/mobilesearch_rest/commit/3e123c36b6ec830f7a204fd45afb4a6139693efb) MOS-28 - Gracefuly handle wrong terms structure. (@AnatolyMuntean)
+- [5ce1e73](https://github.com/inleadmedia/mobilesearch_rest/commit/5ce1e73aea34ae51d63eaf3a1a2204af1e343bfc) MOS-28 - Migration stub. (@AnatolyMuntean)
+- [730a946](https://github.com/inleadmedia/mobilesearch_rest/commit/730a946afb89715aa5f639c87767524a251a3b99) MOS-25 - Fetch nodes by status regardless of node status stored value type. (@AnatolyMuntean)
+- [919be53](https://github.com/inleadmedia/mobilesearch_rest/commit/919be5372f731e97641e3b259e422dbef8a33681) Updated CHANGELOG with new version. (@guddo)
+
+### v1.7 (04/04-2018)
+- [d449e31](https://github.com/inleadmedia/mobilesearch_rest/commit/d449e317d276940de9e31abbbcb6682882fb47b4) MOS-15 - Filter out unpublished by default. (@AnatolyMuntean)
+- [96c14f2](https://github.com/inleadmedia/mobilesearch_rest/commit/96c14f2a0eb86e1ffe48e735504cfc029e986d37) MOS-21 - Status and upcoming filters, tests. (@AnatolyMuntean)
+- [2e21401](https://github.com/inleadmedia/mobilesearch_rest/commit/2e2140119392c0cfc2a9ff16ee1a3735b51de2a4) MOS-21 - Some comments. (@AnatolyMuntean)
+- [a0a2d18](https://github.com/inleadmedia/mobilesearch_rest/commit/a0a2d188a77f6a9182a0d2a6c91965eab179b7ea) MOS-16 - Typo removed. (@AnatolyMuntean)
+- [526e947](https://github.com/inleadmedia/mobilesearch_rest/commit/526e9473673c1ba7df29189b2a5194bacfa732db) MOS-16 - Filter content within libraries, tests. (@AnatolyMuntean)
+- [8463e43](https://github.com/inleadmedia/mobilesearch_rest/commit/8463e43ad935dde59ab8ef15e024740ec732cc6d) MOS-21 - Fetch paged search results. (@AnatolyMuntean)
+- [74cf27c](https://github.com/inleadmedia/mobilesearch_rest/commit/74cf27c30caed4bb99f34bbc55db2ad5cc80ceb1) MOS-21 - Ability to fetch limited results. (@AnatolyMuntean)
+- [38e092b](https://github.com/inleadmedia/mobilesearch_rest/commit/38e092bffc7093f71df8cedf78958e4049580be0) MOS-22 - Check for malformed taxonomy. (@AnatolyMuntean)
+- [c177ef1](https://github.com/inleadmedia/mobilesearch_rest/commit/c177ef1b3559dfe6a4ff4a4a0c716ae6da9881db) MOS-18 - Test coverage for most cases.
+- [f142ad8](https://github.com/inleadmedia/mobilesearch_rest/commit/f142ad8f91281acd191d48bc6663b9bfb57d18f7) MOS-18 - Minor cleanup. (@AnatolyMuntean)
+- [3242392](https://github.com/inleadmedia/mobilesearch_rest/commit/3242392d50db06d0c074e80ec3217cb1eaaabec5) Updated CHANGELOG with new version. (@guddo)
+
 ### v1.6 (05/02-2018)
+- [e167c12](https://github.com/inleadmedia/mobilesearch_rest/commit/e167c1234a3925e50883335df3fb16dd034a4970) MOS-17 - Update packages.
 - [7dff615](https://github.com/inleadmedia/mobilesearch_rest/commit/7dff6154c35c2dd7ba4028f8d8c4bdf0da160139) MOS-17 - Support nested taxonomies when fetching content. (@AnatolyMuntean)
+- [f64040f](https://github.com/inleadmedia/mobilesearch_rest/commit/f64040f768018a2884660bf3d5323f82c76e8ee8) MOS-17 - Additional PSR2 compliance. (@AnatolyMuntean)
+- [b254eb7](https://github.com/inleadmedia/mobilesearch_rest/commit/b254eb7dc13585df3c0bec30f3f1c2678e55670c) MOS-17 - Follow the PSR-2 code style. (@AnatolyMuntean)
+- [f7c1eb7](https://github.com/inleadmedia/mobilesearch_rest/commit/f7c1eb7eb3762547bed666bc99190d0278b56d01) MOS-17 - Recurse into nested taxonomies when fetching content. (@AnatolyMuntean)
 - [5ef2f7f](https://github.com/inleadmedia/mobilesearch_rest/commit/5ef2f7f778029c76732282071e8b86dcfb240983) ES-1129 - Dump image file for easyscreen image field.
+- [3f69110](https://github.com/inleadmedia/mobilesearch_rest/commit/3f69110c77e91b7876a9c19a4ca4e5aafc650c61) ES-1129 - Dump image file for easyscreen image field.
+- [81bc6f9](https://github.com/inleadmedia/mobilesearch_rest/commit/81bc6f9eec264e1d4c752e77d47a8b63b911889f) ES-1129 - Dump image file for easyscreen iamge field.
+- [3cbcfc7](https://github.com/inleadmedia/mobilesearch_rest/commit/3cbcfc76e146a93171e198b7dcf342ce68efb4ab) Return node created and changed values to ISO-8601 format.
+- [4a5932f](https://github.com/inleadmedia/mobilesearch_rest/commit/4a5932fa90669ddde8d8c21ec0e04d3cfe1bdc49) Convert event date to ISO-8601.
 - [9e57ff7](https://github.com/inleadmedia/mobilesearch_rest/commit/9e57ff77512b1dcc3074a599a29eea95a6237cd0) Replace image data with proper path.
 - [9ec9d34](https://github.com/inleadmedia/mobilesearch_rest/commit/9ec9d34f7cb77eb308ffd217ab35ce2fac678fa4) MOS-13 - Recurse in term hierarchy when fetching term suggestions.
+- [1f11330](https://github.com/inleadmedia/mobilesearch_rest/commit/1f11330a56ff31e40faa7f3e2f7b2bb54d7d7928) Replace image data with proper path.
+- [4862eb8](https://github.com/inleadmedia/mobilesearch_rest/commit/4862eb8c4e895422c22dc655beaa8c5255a77c05) MOS-13 - Recurse in term hierarchy when fetching term suggestions.
+- [f7d8b6b](https://github.com/inleadmedia/mobilesearch_rest/commit/f7d8b6bcb1228ca878aa0d632120bf896070cea5) Fix for key/signature check.
 - [31cf055](https://github.com/inleadmedia/mobilesearch_rest/commit/31cf05534cde1a09ac1acba4f222252b52d84e1e) Wrongly resolved merge conflict. (@guddo)
 - [2494d0b](https://github.com/inleadmedia/mobilesearch_rest/commit/2494d0bc61e3ed412b816a2df5dd8a1a8e059c75) Update composer packages to latest version.
 - [8c2a4e1](https://github.com/inleadmedia/mobilesearch_rest/commit/8c2a4e109583435e524b2c689d63a777fe63bf56) MOS-12 - Upcoming events logic.
@@ -18,6 +57,8 @@
 
 ### v1.5 (12/01-2017)
 - [34baa78](https://github.com/inleadmedia/mobilesearch_rest/commit/34baa78cc264d5757f96619ecbf81a84128cc947) Support for resizing by passing height or width only.
+- [050ad13](https://github.com/inleadmedia/mobilesearch_rest/commit/050ad1394558a41afd1263ad2e3b114c029bf9d8) Support for resizing by passing height or width only.
+- [1f8bcfa](https://github.com/inleadmedia/mobilesearch_rest/commit/1f8bcfa68fb3ac3dcd10704b5d34da35e4a2cbfa) Mongo ODM for php7.
 - [f3b18ed](https://github.com/inleadmedia/mobilesearch_rest/commit/f3b18eda2d5346c3b38b4c7ff3ae643c7b2d8a96) remove key checks from get operations (@vibjerg)
 
 ### v1.4 (09/08-2016)
