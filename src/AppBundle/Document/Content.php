@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Document;
 
@@ -10,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 /**
  * @MongoDB\Document
  */
-class Content
+class Content implements \JsonSerializable
 {
 
     /**
@@ -200,5 +197,21 @@ class Content
     public function getAgency()
     {
         return $this->agency;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'nid' => $this->getNid(),
+            'agency' => $this->getAgency(),
+            'type' => $this->getType(),
+            'fields' => $this->getFields(),
+            'taxonomy' => $this->getTaxonomy(),
+            'list' => $this->getList(),
+        ];
     }
 }

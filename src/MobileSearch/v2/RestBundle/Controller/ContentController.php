@@ -2,6 +2,7 @@
 
 namespace MobileSearch\v2\RestBundle\Controller;
 
+use AppBundle\Document\Content;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -155,7 +156,7 @@ class ContentController extends Controller
 
         $result = array_merge($result, $pagination, $navigation);
 
-        return new JsonResponse($result);
+        return new JsonResponse($result, Response::HTTP_OK);
     }
 
     /**
@@ -163,12 +164,24 @@ class ContentController extends Controller
      * @Method({"GET"})
      * @ApiDoc(
      *     section = "Content",
-     *     views = { "api" }
+     *     views = { "api" },
+     *     parameters = {
+     *         {
+     *             "name" = "id",
+     *             "dataType" = "string",
+     *             "required" = true,
+     *             "description" = "Unique content id."
+     *         }
+     *     }
      * )
      */
-    public function contentAction()
+    public function contentAction(Request $request, string $id)
     {
+        $em = $this->get('doctrine_mongodb')->getManager();
+        $contentRepository = $em->getRepository(Content::class);
+        $contentEntity = $contentRepository->find($id);
 
+        return new JsonResponse(['data' => $contentEntity], $contentEntity ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
     }
 
     /**
