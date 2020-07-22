@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Controller;
 
@@ -11,6 +8,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +19,9 @@ use AppBundle\Rest\RestListsRequest;
 use AppBundle\Rest\RestMenuRequest;
 use AppBundle\Rest\RestTaxonomyRequest;
 
+/**
+ * Class RestController.
+ */
 final class RestController extends Controller
 {
 
@@ -34,6 +35,9 @@ final class RestController extends Controller
 
     private $rawContent;
 
+    /**
+     * RestController constructor.
+     */
     public function __construct()
     {
         $this->lastMessage = '';
@@ -507,7 +511,7 @@ final class RestController extends Controller
     }
 
     /**
-     * Assembled the response object.
+     * Assembles the response object.
      *
      * @param bool $status
      *   Request status.
@@ -518,7 +522,7 @@ final class RestController extends Controller
      * @param null $hits
      *   Number of hits, if any.
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      *   Response object.
      */
     private function setResponse($status = true, $message = '', $items = [], $hits = NULL)
@@ -534,7 +538,7 @@ final class RestController extends Controller
             $responseContent['hits'] = $hits;
         }
 
-        $response = new Response(json_encode($responseContent));
+        $response = new JsonResponse($responseContent);
         $response->headers->set('Content-Type', 'application/json');
         $response->setSharedMaxAge(600);
         $response->headers->addCacheControlDirective('must-revalidate', true);

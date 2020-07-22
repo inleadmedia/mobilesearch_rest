@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Document;
 
@@ -34,17 +31,17 @@ class Content
     protected $type;
 
     /**
-     * @MongoDB\Hash
+     * @MongoDB\Field(type="hash")
      */
     protected $fields;
 
     /**
-     * @MongoDB\Hash
+     * @MongoDB\Field(type="hash")
      */
     protected $taxonomy;
 
     /**
-     * @MongoDB\collection
+     * @MongoDB\Field(type="collection")
      */
     protected $list;
 
@@ -109,7 +106,7 @@ class Content
     /**
      * Set fields
      *
-     * @param collection $fields
+     * @param array $fields
      *
      * @return self
      */
@@ -123,7 +120,7 @@ class Content
     /**
      * Get fields
      *
-     * @return collection $fields
+     * @return array $fields
      */
     public function getFields()
     {
@@ -133,7 +130,7 @@ class Content
     /**
      * Set taxonomy
      *
-     * @param collection $taxonomy
+     * @param array $taxonomy
      *
      * @return self
      */
@@ -147,7 +144,7 @@ class Content
     /**
      * Get taxonomy
      *
-     * @return collection $taxonomy
+     * @return array $taxonomy
      */
     public function getTaxonomy()
     {
@@ -157,7 +154,7 @@ class Content
     /**
      * Set list
      *
-     * @param collection $list
+     * @param array $list
      *
      * @return self
      */
@@ -171,7 +168,7 @@ class Content
     /**
      * Get list
      *
-     * @return collection $list
+     * @return array $list
      */
     public function getList()
     {

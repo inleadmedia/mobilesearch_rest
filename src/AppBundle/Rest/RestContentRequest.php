@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Rest;
 
@@ -9,9 +6,11 @@ use AppBundle\Document\Content;
 use AppBundle\Document\Content as FSContent;
 use AppBundle\Services\RestHelper;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
-use Doctrine\ODM\MongoDB\Cursor;
 use Symfony\Component\Filesystem\Filesystem as FSys;
 
+/**
+ * Class RestContentRequest.
+ */
 class RestContentRequest extends RestBaseRequest
 {
     const STATUS_ALL = '-1';
@@ -383,19 +382,8 @@ class RestContentRequest extends RestBaseRequest
      */
     private function parseFields(array $fields)
     {
-        $image_fields = [
-            'field_images',
-            'field_background_image',
-            'field_ding_event_title_image',
-            'field_ding_event_list_image',
-            'field_ding_library_title_image',
-            'field_ding_library_list_image',
-            'field_ding_news_title_image',
-            'field_ding_news_list_image',
-            'field_ding_page_title_image',
-            'field_ding_page_list_image',
-            'field_easyscreen_image',
-        ];
+        $image_fields = !is_array($fields['_image_fields']) ? array_values($fields['_image_fields']) : [];
+
         foreach ($fields as $field_name => &$field_value) {
             if (in_array($field_name, $image_fields)) {
                 if (!is_array($field_value['value'])) {
