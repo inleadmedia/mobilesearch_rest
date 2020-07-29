@@ -5,9 +5,19 @@ namespace AppBundle\Rest;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 use AppBundle\Document\Lists as FSList;
 
+/**
+ * Class RestListsRequest
+ *
+ * TODO: Convert to a service.
+ */
 class RestListsRequest extends RestBaseRequest
 {
 
+    /**
+     * RestListsRequest constructor.
+     *
+     * @param \Doctrine\Bundle\MongoDBBundle\ManagerRegistry $em
+     */
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);

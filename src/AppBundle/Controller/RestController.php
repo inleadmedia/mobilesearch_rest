@@ -53,8 +53,10 @@ final class RestController extends Controller
         $this->lastMethod = $request->getMethod();
         $this->rawContent = $request->getContent();
 
-        $em = $this->get('doctrine_mongodb');
-        $rcr = new RestContentRequest($em);
+        $rcr = new RestContentRequest(
+            $this->get('doctrine_mongodb'),
+            $this->get('image_payload.converter')
+        );
 
         return $this->relay($rcr);
     }
@@ -180,8 +182,10 @@ final class RestController extends Controller
         if (empty($fields['agency'])) {
             $this->lastMessage = 'Failed validating request. Check if agency is set.';
         } else {
-            $em = $this->get('doctrine_mongodb');
-            $rcr = new RestContentRequest($em);
+            $rcr = new RestContentRequest(
+                $this->get('doctrine_mongodb'),
+                $this->get('image_payload.converter')
+            );
 
             $items = call_user_func_array([$rcr, 'fetchFiltered'], $fields);
 
@@ -313,8 +317,10 @@ final class RestController extends Controller
             $fields[$field] = $request->query->get($field) ?? $fields[$field];
         }
 
-        $em = $this->get('doctrine_mongodb');
-        $rcr = new RestContentRequest($em);
+        $rcr = new RestContentRequest(
+            $this->get('doctrine_mongodb'),
+            $this->get('image_payload.converter')
+        );
         $hits = 0;
 
         if (empty($fields['agency'])) {
@@ -505,6 +511,10 @@ final class RestController extends Controller
             $this->lastMessage = 'Request fault: '.$exc->getMessage();
         } catch (\Exception $exc) {
             $this->lastMessage = 'Generic fault: '.$exc->getMessage();
+
+            /** @var \Psr\Log\LoggerInterface $logger */
+            $logger = $this->get('logger');
+            $logger->error($exc->getMessage() . "|" . $exc->getFile() . "|" . $exc->getLine());
         }
 
         return $this->setResponse($this->lastStatus, $this->lastMessage);

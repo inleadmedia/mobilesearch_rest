@@ -5,9 +5,19 @@ namespace AppBundle\Rest;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 use AppBundle\Document\Menu as FSMenu;
 
+/**
+ * Class RestMenuRequest
+ *
+ * TODO: Convert to a service.
+ */
 class RestMenuRequest extends RestBaseRequest
 {
 
+    /**
+     * RestMenuRequest constructor.
+     *
+     * @param \Doctrine\Bundle\MongoDBBundle\ManagerRegistry $em
+     */
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);

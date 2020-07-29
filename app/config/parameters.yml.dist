@@ -7,4 +7,7 @@ parameters:
     mongo_db:          mobilesearch
 
     timezone: "Europe/Copenhagen"
+    # Images directory, relative to the 'web' directory.
+    images_dir: "storage/images"
+    # Web directory path. One might not want to edit this.
     web_dir: "%kernel.root_dir%/../web"

@@ -7,4 +7,4 @@ services:
 
     image_payload.converter:
         class: AppBundle\Services\ImagePayloadConverter
-        arguments: ['%web_dir%']
+        arguments: ['@logger', '%web_dir%/%images_dir%']
