@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Document;
 
@@ -39,7 +36,7 @@ class Lists
     protected $name;
 
     /**
-     * @MongoDB\collection
+     * @MongoDB\Field(type="collection")
      */
     protected $nids;
 

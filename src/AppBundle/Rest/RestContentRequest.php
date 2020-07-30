@@ -1,17 +1,19 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Rest;
 
 use AppBundle\Document\Content;
 use AppBundle\Document\Content as FSContent;
+use AppBundle\Exception\RestException;
+use AppBundle\Services\ImagePayloadConverter;
 use AppBundle\Services\RestHelper;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
-use Doctrine\ODM\MongoDB\Cursor;
-use Symfony\Component\Filesystem\Filesystem as FSys;
 
+/**
+ * Class RestContentRequest.
+ *
+ * TODO: Convert to a service.
+ */
 class RestContentRequest extends RestBaseRequest
 {
     const STATUS_ALL = '-1';
@@ -21,11 +23,21 @@ class RestContentRequest extends RestBaseRequest
     const STATUS_UNPUBLISHED = '0';
 
     /**
+     * Image payload converter service.
+     *
+     * @var \AppBundle\Services\ImagePayloadConverter
+     */
+    protected $imagePayloadConverter;
+
+    /**
      * RestContentRequest constructor.
      *
      * @param MongoEM $em
+     *   Mongo registry.
+     * @param \AppBundle\Services\ImagePayloadConverter $imagePayloadConverter
+     *   Image payload converter service.
      */
-    public function __construct(MongoEM $em)
+    public function __construct(MongoEM $em, ImagePayloadConverter $imagePayloadConverter)
     {
         parent::__construct($em);
 
@@ -34,6 +46,8 @@ class RestContentRequest extends RestBaseRequest
             $this->primaryIdentifier,
             'agency',
         ];
+
+        $this->imagePayloadConverter = $imagePayloadConverter;
     }
 
     /**
@@ -375,7 +389,7 @@ class RestContentRequest extends RestBaseRequest
     }
 
     /**
-     * Processes image fields by converting base64 image content to physical file.
+     * Processes image fields by converting base64 image content into physical file.
      *
      * @param array $fields
      *
@@ -383,49 +397,30 @@ class RestContentRequest extends RestBaseRequest
      */
     private function parseFields(array $fields)
     {
-        $image_fields = [
-            'field_images',
-            'field_background_image',
-            'field_ding_event_title_image',
-            'field_ding_event_list_image',
-            'field_ding_library_title_image',
-            'field_ding_library_list_image',
-            'field_ding_news_title_image',
-            'field_ding_news_list_image',
-            'field_ding_page_title_image',
-            'field_ding_page_list_image',
-            'field_easyscreen_image',
-        ];
-        foreach ($fields as $field_name => &$field_value) {
-            if (in_array($field_name, $image_fields)) {
-                if (!is_array($field_value['value'])) {
-                    $field_value['value'] = [$field_value['value']];
+        foreach ($fields as $fieldName => $fieldPayload) {
+            $field = &$fields[$fieldName];
+
+            foreach ($field['attr'] as $k => $fieldAttribute) {
+                // Wrong mime, skip this.
+                if (!preg_match('/^image\/(jpg|jpeg|gif|png)$/', $fieldAttribute)) {
+                    continue;
                 }
 
-                foreach ($field_value['value'] as $k => $value) {
-                    if (!empty($value) && isset($field_value['attr'][$k]) && preg_match('/^image\/(jpg|jpeg|gif|png)$/', $field_value['attr'][$k])) {
-                        $file_ext = explode('/', $field_value['attr'][$k]);
-                        $extension = isset($file_ext[1]) ? $file_ext[1] : '';
-                        $file_contents = $field_value['value'][$k];
-                        $fields[$field_name]['value'][$k] = null;
+                // No contents, nothing to do.
+                if (empty($field['value'][$k])) {
+                    continue;
+                }
 
-                        if (!empty($extension)) {
-                            $fs = new FSys();
+                $fileContents = $field['value'][$k];
+                $field['value'][$k] = null;
 
-                            $dir = '../web/storage/images/'.$this->agencyId;
-                            if (!$fs->exists($dir)) {
-                                $fs->mkdir($dir);
-                            }
+                list(, $extension) = explode('/', $fieldAttribute);
 
-                            $filename = sha1($value.$this->agencyId).'.'.$extension;
-                            $path = $dir.'/'.$filename;
+                $filename = sha1($fileContents.$this->agencyId).'.'.$extension;
+                $filePath = $this->agencyId.'/'.$filename;
 
-                            $fs->dumpFile($path, base64_decode($file_contents));
-                            if ($fs->exists($path)) {
-                                $field_value['value'][$k] = 'files/'.$this->agencyId.'/original/'.$filename;
-                            }
-                        }
-                    }
+                if ($this->imagePayloadConverter->writeImage($fileContents, $filePath)) {
+                    $field['value'][$k] = 'files/'.$this->agencyId.'/original/'.$filename;
                 }
             }
         }

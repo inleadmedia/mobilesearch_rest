@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Document;
 
@@ -34,7 +31,7 @@ class Agency
     protected $name;
 
     /**
-     * @MongoDB\collection
+     * @MongoDB\Field(type="collection")
      */
     protected $children;
 

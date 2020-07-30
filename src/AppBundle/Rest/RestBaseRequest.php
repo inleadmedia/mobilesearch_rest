@@ -1,17 +1,18 @@
 <?php
-/**
- * @file
- */
 
 namespace AppBundle\Rest;
 
 use AppBundle\Document\Agency;
 use AppBundle\Exception\RestException;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validation;
 
+/**
+ * Class RestBaseRequest.
+ */
 abstract class RestBaseRequest
 {
-
     protected $agencyId = null;
 
     protected $signature = null;
@@ -136,11 +137,38 @@ abstract class RestBaseRequest
     protected function validate()
     {
         $body = $this->getParsedBody();
+        // TODO: Whole this part to be reworked as constraints validator, as below.
         foreach ($this->requiredFields as $field) {
             if (empty($body[$field])) {
                 throw new RestException('Required field "'.$field.'" has no value.');
             } elseif ($field == 'agency' && !$this->isChildAgencyValid($body[$field])) {
                 throw new RestException("Tried to modify entity using agency {$body[$field]} which does not exist.");
+            }
+        }
+
+        if (!array_key_exists('fields', $body)) {
+            return;
+        }
+
+        // TODO: Validate complete 'body' payload structure.
+        // Validates the 'fields' payload.
+        $validator = Validation::createValidator();
+        $constraint = new Assert\Collection([
+            'attr' => new Assert\Optional([
+                new Assert\Type('array')
+            ]),
+            'name' => [
+                new Assert\Type('string'),
+                new Assert\Length(['min' => 1, 'max' => 32])
+            ],
+            'value' => new Assert\NotNull()
+        ]);
+        foreach ($body['fields'] as $field_name => $field_payload) {
+            /** @var \Symfony\Component\Validator\ConstraintViolationInterface[] $violations */
+            $violations = $validator->validate($field_payload, $constraint);
+
+            if (0 !== count($violations)) {
+                throw new RestException("Failed to validate field [{$field_name}] payload with exception: {$violations[0]->getPropertyPath()} - {$violations[0]->getMessage()}");
             }
         }
     }

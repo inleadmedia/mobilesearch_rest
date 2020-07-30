@@ -1,41 +1,70 @@
 <?php
 
-/**
- * @file
- */
-
 namespace AppBundle\Rest;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
 
+/**
+ * Class RestTaxonomyRequest
+ *
+ * TODO: Convert to a service.
+ *
+ * @deprecated Consider to move methods to a document repository instead.
+ */
 class RestTaxonomyRequest extends RestBaseRequest
 {
 
+    /**
+     * RestTaxonomyRequest constructor.
+     *
+     * @param \Doctrine\Bundle\MongoDBBundle\ManagerRegistry $em
+     */
     public function __construct(MongoEM $em)
     {
         parent::__construct($em);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function get($id, $agency)
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function exists($id, $agency)
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function insert()
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function update($id, $agency)
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function delete($id, $agency)
     {
     }
 
+    /**
+     * @param $agency
+     * @param $contentType
+     *
+     * @return array
+     */
     public function fetchVocabularies($agency, $contentType)
     {
         $content = $this->em
@@ -61,6 +90,14 @@ class RestTaxonomyRequest extends RestBaseRequest
         return $vocabularies;
     }
 
+    /**
+     * @param $agency
+     * @param $vocabulary
+     * @param $contentType
+     * @param $query
+     *
+     * @return array
+     */
     public function fetchTermSuggestions($agency, $vocabulary, $contentType, $query)
     {
         $field = 'taxonomy.'.$vocabulary.'.terms';
