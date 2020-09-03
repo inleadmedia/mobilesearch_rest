@@ -168,6 +168,11 @@ final class RestController extends Controller
             $fields[$field] = null !== $request->query->get($field) ? $request->query->get($field) : $fields[$field];
         }
 
+        $allowedSortingFields = $this->getAllowedSortingFields();
+        if (!in_array($fields['sort'], $allowedSortingFields)) {
+            $fields['sort'] = reset($allowedSortingFields);
+        }
+
         $hits = 0;
 
         if (empty($fields['agency'])) {
@@ -537,5 +542,23 @@ final class RestController extends Controller
         $response->headers->addCacheControlDirective('must-revalidate', true);
 
         return $response;
+    }
+
+    /**
+     * Gets a list of allowed fields to perform sorting on.
+     *
+     * @return array
+     *   A set of field names.
+     */
+    private function getAllowedSortingFields()
+    {
+        $indexes = $this->getParameter('mongo_content_index');
+
+        $sortingFields = [];
+        foreach ($indexes as $index) {
+            $sortingFields[] = key($index[0]);
+        }
+
+        return $sortingFields;
     }
 }

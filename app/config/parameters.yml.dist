@@ -21,3 +21,9 @@ parameters:
     #Mongo ODM related settings.
     mongo_host:        mongodb://localhost:27017
     mongo_db:          mobilesearch
+    mongo_content_index:
+        - [ {nid:1}, {name:node_id} ]
+        - [ {fields.author.value: 1}, {name:author} ]
+        - [ {fields.title.value: 1}, {name:title} ]
+        - [ {fields.created.value: -1}, {name:created} ]
+        - [ {fields.changed.value: -1}, {name:changed} ]
