@@ -11,3 +11,13 @@ parameters:
     images_dir: "storage/images"
     # Web directory path. One might not want to edit this.
     web_dir: "%kernel.root_dir%/../web"
+
+    # Default content index.
+    mongo_content_index:
+        - [ {nid:1}, {name:node_id} ]
+        - [ {fields.author.value: 1}, {name:author} ]
+        - [ {fields.title.value: 1}, {name:title} ]
+        - [ {fields.created.value: -1}, {name:created} ]
+        - [ {fields.changed.value: -1}, {name:changed} ]
+
+    response_age: 600
