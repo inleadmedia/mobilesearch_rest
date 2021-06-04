@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace AppBundle\Rest;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry as MongoEM;
