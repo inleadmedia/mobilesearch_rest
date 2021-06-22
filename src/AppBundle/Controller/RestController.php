@@ -555,7 +555,7 @@ final class RestController extends Controller
 
         $response = new JsonResponse($responseContent);
         $response->headers->set('Content-Type', 'application/json');
-        $response->setSharedMaxAge(600);
+        $response->setSharedMaxAge($this->getParameter('response_age'));
         $response->headers->addCacheControlDirective('must-revalidate', true);
 
         return $response;

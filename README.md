@@ -7,19 +7,17 @@ MobileSearch RESTful API
 
 Documentation
 -------------
-
-[Read the Documentation](http://rest.filmstriben.dk/web/)
+[Read the Documentation](http://v2.mobilesearch.inlead.ws/web/)
 
 Requirements
 ------------
-1. PHP 5.4+
+1. PHP 7.1.*
 2. composer
-3. php5-mongo extension
-4. mongodb storage
+3. php-mongodb extension
+4. mongodb 3.4/3.6 storage
 
 Installation
 ------------
-
 1. Clone the repository.
 2. ``cd PATH_TO_CLONED_REPO``;
 2. Run ``composer install``.
@@ -34,18 +32,29 @@ Configuration
 
 First time run
 ------------
-Using a mongodb admin tool (e.g. Rockmongo) or any else create the required database (as in `config.yml`, by default it's `fs`).
-Create `Agency` collection and fill it with required agency crendentials, e.g.:
+Using a mongodb admin tool (e.g. Rockmongo) or mongo cli create the required database (as set during `composer install`
+prompts).
+Create `Agency` collection and fill it with required agency credentials, e.g.:
 ```
 {
    "agencyId": "100000",
    "key": "3fa",
    "name": "Dummy",
    "children": []
-}	
+}
 ```
 
-License
--------
+###Running tests:
+-------------
+In terminal, type `./run-tests.sh`.
 
-This bundle is under the GNU GPL license.
+```shell
+./run-tests.sh
+PHPUnit 7.5.13 by Sebastian Bergmann and contributors.
+
+.................................                                 33 / 33 (100%)
+
+Time: 3.55 seconds, Memory: 40.00 MB
+
+OK (33 tests, 787 assertions)
+```

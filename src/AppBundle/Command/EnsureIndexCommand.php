@@ -39,7 +39,7 @@ class EnsureIndexCommand extends ContainerAwareCommand {
         $collection->deleteIndexes();
 
         foreach ($indexes as $indexDefinition) {
-            $createIndexResult = $collection->ensureIndex($indexDefinition[0], $indexDefinition[1]);
+            $createIndexResult = $collection->createIndex($indexDefinition[0], $indexDefinition[1]);
             if (array_key_exists('note', $createIndexResult)) {
                 $output->writeln($createIndexResult['note']);
             }
@@ -47,4 +47,3 @@ class EnsureIndexCommand extends ContainerAwareCommand {
 
     }
 }
-
